@@ -126,7 +126,7 @@
         /* Transições de Layout */
         .transition-width { transition: width 0.3s ease, flex 0.3s ease; }
 
-        /* ✅ MELHORIA 9: Toast de notificação não bloqueante */
+        /* Toast de notificação */
         #toastContainer {
             position: fixed;
             bottom: 1.5rem;
@@ -155,7 +155,7 @@
         .toast-success { background: #22c55e; color: white; }
         .toast-warn { background: #f59e0b; color: white; }
 
-        /* ✅ MELHORIA 10: Flash de confirmação ao salvar nota */
+        /* Flash de confirmação ao salvar nota */
         @keyframes noteFlash {
             0%   { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(37,99,235,0.3); }
             100% { border-color: var(--border-color); box-shadow: none; }
@@ -186,10 +186,19 @@
                     <option value="dracula">Drácula (Dev)</option>
                 </select>
             </div>
-            <div class="mb-2 text-center p-2 bg-green-50 border border-green-200 rounded-md">
-                <span class="text-xs font-semibold text-green-700">
-                    <i class="fa-solid fa-shield-check"></i> IA Conectada e Segura (Nuvem)
-                </span>
+            <div class="mb-3">
+                <label class="block text-xs font-semibold mb-1 text-textMuted">Motor IA (Agnóstico)</label>
+                <select id="aiModelSelector" class="w-full bg-bgPanel text-textMain border border-border rounded p-1.5 focus:outline-none focus:border-accent">
+                    <option value="gemini">Google (Gemini 2.5 Flash)</option>
+                    <option value="groq">Groq (Llama 3.3 70B)</option>
+                    <option value="kimi">Kimi (Moonshot)</option>
+                </select>
+            </div>
+            <div class="mb-2">
+                <label class="block text-xs font-semibold mb-1 text-textMuted">
+                    Chave API <i class="fa-solid fa-lock text-xs" title="Salvo apenas no seu navegador"></i>
+                </label>
+                <input type="password" id="apiKeyInput" placeholder="Sua API Key..." class="w-full bg-bgPanel text-textMain border border-border rounded p-1.5 focus:outline-none focus:border-accent">
             </div>
         </div>
 
@@ -244,12 +253,16 @@
     <aside id="rightSidebar" class="w-1/4 h-full bg-bgPanel border-l border-border flex flex-col z-10 shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.1)] transition-width flex-shrink-0">
         
         <div class="h-[60%] border-b border-border flex flex-col bg-bgMain">
+            
             <div class="flex border-b border-border bg-bgPanel flex-shrink-0">
-                <button id="tabChat" class="flex-1 p-3 text-sm font-semibold text-accent border-b-2 border-accent transition-colors flex justify-center items-center gap-2">
-                    <i class="fa-solid fa-robot"></i> Chat Local
+                <button id="tabChat" class="flex-1 p-2.5 text-[13px] font-semibold text-accent border-b-2 border-accent transition-colors flex justify-center items-center gap-1.5">
+                    <i class="fa-solid fa-robot"></i> Chat
                 </button>
-                <button id="tabAnalysis" class="flex-1 p-3 text-sm font-semibold text-textMuted border-b-2 border-transparent hover:text-accent transition-colors flex justify-center items-center gap-2">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> Visão Geral
+                <button id="tabTools" class="flex-1 p-2.5 text-[13px] font-semibold text-textMuted border-b-2 border-transparent hover:text-accent transition-colors flex justify-center items-center gap-1.5">
+                    <i class="fa-solid fa-toolbox"></i> Apps
+                </button>
+                <button id="tabAnalysis" class="flex-1 p-2.5 text-[13px] font-semibold text-textMuted border-b-2 border-transparent hover:text-accent transition-colors flex justify-center items-center gap-1.5">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Visão
                 </button>
             </div>
             
@@ -269,15 +282,8 @@
 
                 <div id="chatMessages" class="flex-1 overflow-y-auto p-3 text-sm flex flex-col gap-3">
                     <div class="bg-bgPanel p-2 rounded-lg border border-border self-start max-w-[85%] text-textMuted">
-                        Faça o upload de um PDF e pergunte algo específico. Eu lerei o documento para responder.
+                        Faça o upload de um PDF e pergunte algo específico, ou escolha uma ferramenta na aba <b>Apps</b>.
                     </div>
-                </div>
-
-                <div class="px-2 pt-2 pb-2 bg-bgPanel border-t border-border flex gap-2 overflow-x-auto whitespace-nowrap flex-shrink-0 hide-scrollbar">
-                    <button class="quick-prompt-btn bg-bgHover text-textMain px-2 py-1 rounded text-[11px] hover:bg-accent hover:text-white transition-colors border border-border" data-prompt="Extraia todos os CNPJs, CPFs e Nomes de Empresas mencionados."><i class="fa-regular fa-id-card"></i> Extrair CNPJs/CPFs</button>
-                    <button class="quick-prompt-btn bg-bgHover text-textMain px-2 py-1 rounded text-[11px] hover:bg-accent hover:text-white transition-colors border border-border" data-prompt="Liste de forma direta todas as penalidades, multas e sanções previstas no documento."><i class="fa-solid fa-gavel"></i> Penalidades</button>
-                    <button class="quick-prompt-btn bg-bgHover text-textMain px-2 py-1 rounded text-[11px] hover:bg-accent hover:text-white transition-colors border border-border" data-prompt="Quais são os prazos principais, validade e datas estipuladas?"><i class="fa-regular fa-calendar-check"></i> Prazos/Datas</button>
-                    <button class="quick-prompt-btn bg-bgHover text-textMain px-2 py-1 rounded text-[11px] hover:bg-accent hover:text-white transition-colors border border-border" data-prompt="Faça uma tabela contendo os itens solicitados, suas quantidades e valores (se houver)."><i class="fa-solid fa-table-list"></i> Criar Tabela</button>
                 </div>
 
                 <div class="p-2 bg-bgPanel border-t border-border flex-shrink-0">
@@ -289,6 +295,137 @@
                     </div>
                 </div>
             </div>
+
+            <div id="contentTools" class="hidden flex-1 flex-col overflow-y-auto bg-bgMain p-4 gap-6">
+                <section>
+                    <h3 class="text-[11px] font-bold text-textMuted mb-3 uppercase tracking-widest flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie"></i> Análise & Relatórios
+                    </h3>
+                    <div class="grid grid-cols-1 gap-3">
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Gere um relatório executivo destacando os pontos críticos deste documento: prazos importantes, multas aplicáveis, exigências técnicas/financeiras e contatos consolidados. Use formatação HTML clara com listas e títulos.">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Relatório de pontos críticos</h4>
+                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-regular fa-file-pdf text-xs"></i></div>
+                            </div>
+                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Gera um relatório executivo HTML/PDF com prazos, multas, exigências e contatos consolidados.</p>
+                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-red-500/10 text-red-600 dark:text-red-400">🔥 Alta demanda</span>
+                        </div>
+
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Extraia cronologicamente todas as datas, prazos e eventos mencionados no documento. Apresente em formato de linha do tempo visual, destacando em negrito os eventos mais críticos ou com prazo muito curto, gerando alertas sobre eles.">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Timeline de prazos</h4>
+                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-regular fa-calendar-days text-xs"></i></div>
+                            </div>
+                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Extrai todas as datas do edital e cria uma linha do tempo visual interativa com alertas.</p>
+                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-red-500/10 text-red-600 dark:text-red-400">🔥 Alta demanda</span>
+                        </div>
+
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Analise as cláusulas deste documento e construa um Mapa de Riscos estruturado. Identifique cláusulas restritivas, ambiguidades ou penalidades severas. Para cada risco, classifique a Probabilidade (Alta/Média/Baixa) e o Impacto Financeiro ou Operacional (Alto/Médio/Baixo).">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Mapa de riscos</h4>
+                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-solid fa-triangle-exclamation text-xs"></i></div>
+                            </div>
+                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Matriz probabilidade × impacto gerada pela IA com base nas cláusulas identificadas.</p>
+                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-yellow-500/10 text-yellow-600 dark:text-yellow-400">⚙️ Complexo</span>
+                        </div>
+
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Atribua um 'Score de Viabilidade' de 0 a 10 para a participação neste edital. Justifique detalhadamente a nota avaliando rigorosamente: complexidade documental, rigidez dos prazos, exigências de qualificação técnica e multas estipuladas.">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Score de viabilidade</h4>
+                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-solid fa-star-half-stroke text-xs"></i></div>
+                            </div>
+                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Pontua o edital de 0–10 considerando complexidade documental, prazos apertados e valor estimado.</p>
+                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400">⭐ Diferencial</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3 class="text-[11px] font-bold text-textMuted mb-3 uppercase tracking-widest flex items-center gap-2">
+                        <i class="fa-solid fa-folder-tree"></i> Produtividade Documental
+                    </h3>
+                    <div class="grid grid-cols-1 gap-3">
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Gere um checklist exaustivo contendo TODOS os documentos exigidos para habilitação jurídica, fiscal, trabalhista, qualificação técnica e qualificação econômico-financeira. Formate como uma lista interativa usando `[ ]` antes de cada item.">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Checklist de habilitação</h4>
+                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-solid fa-list-check text-xs"></i></div>
+                            </div>
+                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Gera uma lista interativa (com checkboxes) de toda documentação exigida para habilitação.</p>
+                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-red-500/10 text-red-600 dark:text-red-400">🔥 Alta demanda</span>
+                        </div>
+
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Comparador Ativado: Por favor, analise as diferenças cruciais entre os arquivos carregados (verifique se a opção 'Contexto Múltiplo' está ativa). Foque nas disparidades de prazos, documentos de habilitação solicitados, valores e penalidades contratuais.">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Comparador de editais</h4>
+                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-solid fa-code-compare text-xs"></i></div>
+                            </div>
+                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Side-by-side entre dois ou mais editais carregados, destacando diferenças relevantes.</p>
+                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-yellow-500/10 text-yellow-600 dark:text-yellow-400">⚙️ Complexo</span>
+                        </div>
+
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Faça uma varredura semântica profunda no texto. Encontre e transcreva as cláusulas e trechos que, mesmo usando palavras diferentes, falem sobre intenções como: garantia dos produtos/serviços, prazos de execução/entrega, penalidades e rescisão.">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Busca semântica</h4>
+                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-solid fa-magnifying-glass-chart text-xs"></i></div>
+                            </div>
+                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Encontra trechos por intenção ("prazo de entrega", "garantia"), não apenas palavra exata.</p>
+                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-green-500/10 text-green-600 dark:text-green-400">✓ Simples</span>
+                        </div>
+
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Mapeie o documento: identifique de forma resumida o número das páginas de referência onde se encontram os blocos principais: Termo de Referência, Exigências de Habilitação, Penalidades/Multas, e Anexos/Declarações.">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Marcadores de página</h4>
+                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-regular fa-bookmark text-xs"></i></div>
+                            </div>
+                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Salva páginas específicas com etiqueta personalizada para navegação rápida.</p>
+                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-green-500/10 text-green-600 dark:text-green-400">✓ Simples</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3 class="text-[11px] font-bold text-textMuted mb-3 uppercase tracking-widest flex items-center gap-2">
+                        <i class="fa-solid fa-file-export"></i> Exportação
+                    </h3>
+                    <div class="grid grid-cols-1 gap-3">
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Gere a estrutura de um Relatório em formato de texto contendo: Capa com os dados principais do edital, Sumário Executivo do objeto, Checklist resumido de habilitação e um Mapa de Riscos consolidado. Estruture muito bem para a exportação.">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Exportar relatório PDF</h4>
+                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-solid fa-file-export text-xs"></i></div>
+                            </div>
+                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Gera PDF com capa, sumário executivo, checklist e mapa de riscos pronto para compartilhar.</p>
+                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-red-500/10 text-red-600 dark:text-red-400">🔥 Alta demanda</span>
+                        </div>
+
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Extraia detalhadamente todos os itens licitados mencionados neste edital/termo de referência e estruture-os como uma tabela CSV (usando ponto e vírgula). Colunas obrigatórias: Lote/Item, Descrição Completa, Quantidade, Valor Estimado (se aplicável) e Prazo Específico de Entrega.">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Exportar para planilha</h4>
+                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-solid fa-file-excel text-xs"></i></div>
+                            </div>
+                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Tabela .xlsx com itens licitados, quantidades, valores, prazos e documentos exigidos.</p>
+                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400">⭐ Diferencial</span>
+                        </div>
+
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Comporte-se como um analista sénior de licitações. Redija um rascunho de e-mail formal direcionado ao Pregoeiro ou Comissão de Contratação. O e-mail deve solicitar esclarecimento ou levantar pedido de impugnação sobre as principais cláusulas ambíguas ou restritivas que você encontrar no documento.">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Rascunho de e-mail</h4>
+                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-solid fa-envelope-open-text text-xs"></i></div>
+                            </div>
+                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">IA gera minuta de e-mail formal de pedido de esclarecimentos ou impugnação com base no edital.</p>
+                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400">⭐ Diferencial</span>
+                        </div>
+
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Analise este edital ou contrato especificamente sob a ótica da Lei de Licitações. Identifique, liste e explique qualquer cláusula que possa ser considerada ilegal, abusiva, ou que restrinja indevidamente o caráter competitivo da licitação, citando possíveis bases de impugnação.">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Detector de cláusulas abusivas</h4>
+                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-solid fa-scale-unbalanced text-xs"></i></div>
+                            </div>
+                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Identifica cláusulas restritivas à competição ou potencialmente ilegais segundo a Lei 14.133/2021.</p>
+                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-yellow-500/10 text-yellow-600 dark:text-yellow-400">⚙️ Complexo</span>
+                        </div>
+                    </div>
+                </section>
+                </div>
 
             <div id="contentAnalysis" class="hidden flex-1 flex flex-col overflow-hidden bg-bgMain">
                 <div class="p-3 border-b border-border bg-bgPanel flex-shrink-0">
@@ -337,6 +474,8 @@
         const MAX_PAGES_TO_EXTRACT = 50;
 
         function getMaxChars() {
+            if (state.aiModel === 'groq') return 28000;
+            if (state.aiModel === 'kimi') return 32000;
             return 200000; // Gemini 2.5 Flash
         }
 
@@ -364,10 +503,12 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
         const state = {
-            files: [], 
+            files: [],
             activeFileId: null,
             zoom: 1.0,
             theme: localStorage.getItem('workspace_theme') || 'classico',
+            aiModel: localStorage.getItem('workspace_aimodel') || 'gemini',
+            apiKey: localStorage.getItem('workspace_apikey') || '',
             chatHistory: []
         };
 
@@ -377,6 +518,8 @@
             btnToggleSidebar: document.getElementById('btnToggleSidebar'),
             btnSummarizePages: document.getElementById('btnSummarizePages'),
             themeSelector: document.getElementById('themeSelector'),
+            aiModelSelector: document.getElementById('aiModelSelector'),
+            apiKeyInput: document.getElementById('apiKeyInput'),
             btnSettings: document.getElementById('btnSettings'),
             settingsPanel: document.getElementById('settingsPanel'),
             fileUpload: document.getElementById('fileUpload'),
@@ -390,15 +533,20 @@
             zoomLevel: document.getElementById('zoomLevel'),
             extractionIndicator: document.getElementById('extractionIndicator'),
             extractionLabel: document.getElementById('extractionLabel'),
+            
+            // Abas Laterais
             tabChat: document.getElementById('tabChat'),
+            tabTools: document.getElementById('tabTools'),
             tabAnalysis: document.getElementById('tabAnalysis'),
             contentChat: document.getElementById('contentChat'),
+            contentTools: document.getElementById('contentTools'),
             contentAnalysis: document.getElementById('contentAnalysis'),
+            
             btnRunAnalysis: document.getElementById('btnRunAnalysis'),
             analysisResults: document.getElementById('analysisResults'),
             toggleMultiDoc: document.getElementById('toggleMultiDoc'),
             chatScopeLabel: document.getElementById('chatScopeLabel'),
-            quickPromptBtns: document.querySelectorAll('.quick-prompt-btn'),
+            toolCards: document.querySelectorAll('.tool-card'),
             chatMessages: document.getElementById('chatMessages'),
             chatInput: document.getElementById('chatInput'),
             btnSendChat: document.getElementById('btnSendChat'),
@@ -409,7 +557,7 @@
         };
 
         // ==========================================
-        // UI - TOGGLE SIDEBAR E MULTI-DOC
+        // UI - TOGGLE E ABAS
         // ==========================================
         DOM.btnToggleSidebar.addEventListener('click', () => {
             if (DOM.leftSidebar.classList.contains('hidden')) {
@@ -431,10 +579,40 @@
             }
         });
 
-        DOM.quickPromptBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                DOM.chatInput.value = btn.dataset.prompt;
-                askAI();
+        // Função Genérica para gerir as Abas (Tabs) da Direita
+        function switchTab(activeTab, activeContent) {
+            // Desativa Todas
+            [DOM.tabChat, DOM.tabAnalysis, DOM.tabTools].forEach(t => {
+                t.classList.replace('text-accent', 'text-textMuted');
+                t.classList.replace('border-accent', 'border-transparent');
+            });
+            [DOM.contentChat, DOM.contentAnalysis, DOM.contentTools].forEach(c => {
+                c.classList.add('hidden');
+                c.classList.remove('flex');
+            });
+
+            // Ativa a Selecionada
+            activeTab.classList.replace('text-textMuted', 'text-accent');
+            activeTab.classList.replace('border-transparent', 'border-accent');
+            activeContent.classList.remove('hidden');
+            activeContent.classList.add('flex');
+        }
+
+        DOM.tabChat.addEventListener('click', () => switchTab(DOM.tabChat, DOM.contentChat));
+        DOM.tabAnalysis.addEventListener('click', () => switchTab(DOM.tabAnalysis, DOM.contentAnalysis));
+        DOM.tabTools.addEventListener('click', () => switchTab(DOM.tabTools, DOM.contentTools));
+
+        // Listener das Novas Ferramentas (Tool Cards)
+        DOM.toolCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const prompt = card.getAttribute('data-prompt');
+                if (prompt) {
+                    // Volta para a aba Chat e preenche a caixa de texto
+                    switchTab(DOM.tabChat, DOM.contentChat);
+                    DOM.chatInput.value = prompt;
+                    // Gatilho imediato para perguntar à IA
+                    askAI();
+                }
             });
         });
 
@@ -449,6 +627,26 @@
 
         DOM.themeSelector.addEventListener('change', (e) => applyTheme(e.target.value));
         applyTheme(state.theme);
+
+        function updateApiKeyPlaceholder() {
+            if (state.aiModel === 'gemini') DOM.apiKeyInput.placeholder = "Sua API Key do Google...";
+            else if (state.aiModel === 'groq') DOM.apiKeyInput.placeholder = "Sua API Key do Groq...";
+            else if (state.aiModel === 'kimi') DOM.apiKeyInput.placeholder = "Sua API Key do Moonshot...";
+        }
+
+        DOM.aiModelSelector.value = state.aiModel;
+        updateApiKeyPlaceholder();
+        DOM.aiModelSelector.addEventListener('change', (e) => {
+            state.aiModel = e.target.value;
+            localStorage.setItem('workspace_aimodel', state.aiModel);
+            updateApiKeyPlaceholder();
+        });
+
+        DOM.apiKeyInput.value = state.apiKey;
+        DOM.apiKeyInput.addEventListener('input', (e) => {
+            state.apiKey = e.target.value;
+            localStorage.setItem('workspace_apikey', state.apiKey);
+        });
 
         DOM.btnSettings.addEventListener('click', () => {
             DOM.settingsPanel.classList.toggle('hidden');
@@ -612,6 +810,7 @@
         function removeFile(id) {
             const idx = state.files.findIndex(f => f.id === id);
             if (idx === -1) return;
+            
             URL.revokeObjectURL(state.files[idx].blobUrl);
             state.files.splice(idx, 1);
 
@@ -760,30 +959,65 @@
         }
 
         // ==========================================
-        // 5. CÉREBRO MULTI-IA CONECTADO NA VERCEL
+        // 5. CÉREBRO MULTI-IA (RAG Simulado)
         // ==========================================
         async function fetchFromAI(systemPrompt, userText) {
-            try {
-                // Chama a API segura hospedada na Vercel (onde a chave está escondida)
-                const res = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        pergunta: userText || "Gere uma resposta baseada nas instruções.",
-                        textoPDF: systemPrompt || ""
-                    })
-                });
+            const model = state.aiModel;
+            const apiKey = state.apiKey;
+            const maxRetries = 5;
+            const delays = [1000, 2000, 4000, 8000, 16000];
 
-                const data = await res.json();
+            for (let attempt = 0; attempt <= maxRetries; attempt++) {
+                try {
+                    if (model === 'gemini') {
+                        const body = {
+                            contents: [{ parts: [{ text: userText }] }],
+                            generationConfig: { temperature: 0.1 }
+                        };
+                        if (systemPrompt) body.systemInstruction = { parts: [{ text: systemPrompt }] };
 
-                if (data.erro) {
-                    throw new Error(data.erro);
+                        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(body)
+                        });
+                        const text = await res.text();
+                        let data;
+                        try { data = JSON.parse(text); } catch (e) { throw new Error(`Serviço temporariamente indisponível (Status ${res.status}).`); }
+                        if (data.error) throw new Error(data.error.message);
+                        return data.candidates[0].content.parts[0].text;
+
+                    } else {
+                        const url = model === 'groq'
+                            ? 'https://api.groq.com/openai/v1/chat/completions'
+                            : 'https://api.moonshot.cn/v1/chat/completions';
+                        const targetModel = model === 'groq' ? 'llama-3.3-70b-versatile' : 'moonshot-v1-8k';
+
+                        const messages = [];
+                        if (systemPrompt) messages.push({ role: "system", content: systemPrompt });
+                        messages.push({ role: "user", content: userText });
+
+                        const res = await fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                            body: JSON.stringify({ model: targetModel, messages, temperature: 0.1 })
+                        });
+                        const text = await res.text();
+                        let data;
+                        try { data = JSON.parse(text); } catch (e) { throw new Error(`Serviço sobrecarregado no momento (Status ${res.status}).`); }
+                        if (data.error) {
+                            const errMsg = data.error.message || data.error.type || JSON.stringify(data.error);
+                            throw new Error(`API ${model.toUpperCase()}: ${errMsg}`);
+                        }
+                        return data.choices[0].message.content;
+                    }
+                } catch (error) {
+                    if (attempt < maxRetries) {
+                        await new Promise(resolve => setTimeout(resolve, delays[attempt]));
+                    } else {
+                        throw new Error(`Falha de comunicação persistente com a IA. Detalhe: ${error.message}`);
+                    }
                 }
-
-                return data.respostaIA;
-
-            } catch (error) {
-                throw new Error(`Servidor: ${error.message}`);
             }
         }
 
@@ -828,6 +1062,12 @@
         async function askAI() {
             const question = DOM.chatInput.value.trim();
             if (!question) return;
+
+            if (!state.apiKey) {
+                showToast("Insira sua API Key nas Configurações.", "warn");
+                DOM.settingsPanel.classList.remove('hidden');
+                return;
+            }
 
             appendChatMessage('user', question);
             state.chatHistory.push({ role: 'user', content: question });
@@ -899,6 +1139,11 @@ ${docText}`;
         // 5.1 RESUMOS DE PÁGINA
         // ==========================================
         DOM.btnSummarizePages.addEventListener('click', async () => {
+            if (!state.apiKey) {
+                showToast("Insira sua API Key nas Configurações primeiro.", "warn");
+                DOM.settingsPanel.classList.remove('hidden');
+                return;
+            }
             const activeFile = state.files.find(f => f.id === state.activeFileId);
             if (!activeFile || !activeFile.extractedText) {
                 showToast("Aguarde a extração de texto do documento atual.", "info");
@@ -915,11 +1160,12 @@ ${docText}`;
                 const prompt = `Faça um resumo ULTRA-CURTO (no máximo 2 frases) contendo a essência de CADA PÁGINA do documento abaixo.
 REGRA CRÍTICA: Retorne sua resposta em formato de lista estrita, sem textos extras, usando este padrão:
 PAGINA_1|resumo aqui...
-PAGINA_2|resumo aqui...`;
+PAGINA_2|resumo aqui...
 
-                // Chama a Vercel invertendo a ordem pra encaixar no prompt
-                const answerRaw = await fetchFromAI(docText, prompt);
-                
+DOCUMENTO:
+${docText}`;
+
+                const answerRaw = await fetchFromAI(null, prompt);
                 answerRaw.split('\n').forEach(line => {
                     const match = line.match(/PAGINA_(\d+)\|(.*)/i);
                     if (match) {
@@ -954,22 +1200,8 @@ PAGINA_2|resumo aqui...`;
         });
 
         // ==========================================
-        // 6. ANÁLISE GERAL (ABAS E GRIFOS)
+        // 6. ANÁLISE GERAL (GRIFOS)
         // ==========================================
-        function switchTab(activeTab, inactiveTab, activeContent, inactiveContent) {
-            activeTab.classList.replace('text-textMuted', 'text-accent');
-            activeTab.classList.replace('border-transparent', 'border-accent');
-            inactiveTab.classList.replace('text-accent', 'text-textMuted');
-            inactiveTab.classList.replace('border-accent', 'border-transparent');
-            activeContent.classList.remove('hidden');
-            activeContent.classList.add('flex');
-            inactiveContent.classList.add('hidden');
-            inactiveContent.classList.remove('flex');
-        }
-
-        DOM.tabChat.addEventListener('click', () => switchTab(DOM.tabChat, DOM.tabAnalysis, DOM.contentChat, DOM.contentAnalysis));
-        DOM.tabAnalysis.addEventListener('click', () => switchTab(DOM.tabAnalysis, DOM.tabChat, DOM.contentAnalysis, DOM.contentChat));
-
         function escapeRegExp(string) {
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
@@ -1005,6 +1237,11 @@ PAGINA_2|resumo aqui...`;
 
         DOM.btnRunAnalysis.addEventListener('click', async () => {
             if (state.files.length === 0) return showToast("Faça upload de pelo menos um PDF.", "warn");
+            if (!state.apiKey) {
+                showToast("Insira sua API Key nas Configurações.", "warn");
+                DOM.settingsPanel.classList.remove('hidden');
+                return;
+            }
 
             DOM.btnRunAnalysis.disabled = true;
             DOM.btnRunAnalysis.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analisando Múltiplos Arquivos...';
@@ -1017,7 +1254,7 @@ PAGINA_2|resumo aqui...`;
 
                 if (allText.length > maxChars) {
                     warningMsg = `<div class="mb-4 p-3 bg-yellow-100/10 border border-yellow-500/50 text-yellow-600 text-xs rounded">
-                        <i class="fa-solid fa-triangle-exclamation"></i> <b>Limite de API:</b> A análise foi limitada ao começo dos documentos para não estourar a memória.
+                        <i class="fa-solid fa-triangle-exclamation"></i> <b>Limite de API:</b> A análise foi limitada ao começo dos documentos para não ultrapassar o limite gratuito do ${state.aiModel.toUpperCase()}.
                     </div>`;
                 }
 
@@ -1036,9 +1273,12 @@ REGRAS DE MARCAÇÃO (OBRIGATÓRIO E CRÍTICO PARA O SISTEMA DE GRIFO AUTOMÁTIC
 SEÇÕES OBRIGATÓRIAS:
 <h3>Tópicos de Atenção</h3>
 <h3>Documentação Exigida</h3>
-<h3>Contatos Úteis</h3>`;
+<h3>Contatos Úteis</h3>
 
-                const answerRaw = await fetchFromAI(truncatedText, prompt);
+TEXTO CONSOLIDADO:
+${truncatedText}`;
+
+                const answerRaw = await fetchFromAI(null, prompt);
                 let answerHTML = answerRaw.replace(/```html/g, '').replace(/```/g, '');
 
                 DOM.analysisResults.innerHTML = warningMsg + DOMPurify.sanitize(answerHTML, {
