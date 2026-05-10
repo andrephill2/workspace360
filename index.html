@@ -126,7 +126,7 @@
         /* Transições de Layout */
         .transition-width { transition: width 0.3s ease, flex 0.3s ease; }
 
-        /* Toast de notificação */
+        /* ✅ MELHORIA 9: Toast de notificação não bloqueante */
         #toastContainer {
             position: fixed;
             bottom: 1.5rem;
@@ -155,7 +155,7 @@
         .toast-success { background: #22c55e; color: white; }
         .toast-warn { background: #f59e0b; color: white; }
 
-        /* Flash de confirmação ao salvar nota */
+        /* ✅ MELHORIA 10: Flash de confirmação ao salvar nota */
         @keyframes noteFlash {
             0%   { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(37,99,235,0.3); }
             100% { border-color: var(--border-color); box-shadow: none; }
@@ -186,9 +186,9 @@
                     <option value="dracula">Drácula (Dev)</option>
                 </select>
             </div>
-            <div class="mb-1 text-center">
-                <span class="text-xs text-green-600 bg-green-100 px-2 py-1 rounded font-semibold border border-green-200">
-                    <i class="fa-solid fa-shield-halved"></i> IA Conectada na Nuvem
+            <div class="mb-2 text-center p-2 bg-green-50 border border-green-200 rounded-md">
+                <span class="text-xs font-semibold text-green-700">
+                    <i class="fa-solid fa-shield-check"></i> IA Conectada e Segura (Nuvem)
                 </span>
             </div>
         </div>
@@ -244,16 +244,12 @@
     <aside id="rightSidebar" class="w-1/4 h-full bg-bgPanel border-l border-border flex flex-col z-10 shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.1)] transition-width flex-shrink-0">
         
         <div class="h-[60%] border-b border-border flex flex-col bg-bgMain">
-            
             <div class="flex border-b border-border bg-bgPanel flex-shrink-0">
-                <button id="tabChat" class="flex-1 p-2.5 text-[13px] font-semibold text-accent border-b-2 border-accent transition-colors flex justify-center items-center gap-1.5">
-                    <i class="fa-solid fa-robot"></i> Chat
+                <button id="tabChat" class="flex-1 p-3 text-sm font-semibold text-accent border-b-2 border-accent transition-colors flex justify-center items-center gap-2">
+                    <i class="fa-solid fa-robot"></i> Chat Local
                 </button>
-                <button id="tabTools" class="flex-1 p-2.5 text-[13px] font-semibold text-textMuted border-b-2 border-transparent hover:text-accent transition-colors flex justify-center items-center gap-1.5">
-                    <i class="fa-solid fa-toolbox"></i> Apps
-                </button>
-                <button id="tabAnalysis" class="flex-1 p-2.5 text-[13px] font-semibold text-textMuted border-b-2 border-transparent hover:text-accent transition-colors flex justify-center items-center gap-1.5">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> Visão
+                <button id="tabAnalysis" class="flex-1 p-3 text-sm font-semibold text-textMuted border-b-2 border-transparent hover:text-accent transition-colors flex justify-center items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Visão Geral
                 </button>
             </div>
             
@@ -273,8 +269,15 @@
 
                 <div id="chatMessages" class="flex-1 overflow-y-auto p-3 text-sm flex flex-col gap-3">
                     <div class="bg-bgPanel p-2 rounded-lg border border-border self-start max-w-[85%] text-textMuted">
-                        Faça o upload de um PDF e pergunte algo específico, ou escolha uma ferramenta na aba <b>Apps</b>.
+                        Faça o upload de um PDF e pergunte algo específico. Eu lerei o documento para responder.
                     </div>
+                </div>
+
+                <div class="px-2 pt-2 pb-2 bg-bgPanel border-t border-border flex gap-2 overflow-x-auto whitespace-nowrap flex-shrink-0 hide-scrollbar">
+                    <button class="quick-prompt-btn bg-bgHover text-textMain px-2 py-1 rounded text-[11px] hover:bg-accent hover:text-white transition-colors border border-border" data-prompt="Extraia todos os CNPJs, CPFs e Nomes de Empresas mencionados."><i class="fa-regular fa-id-card"></i> Extrair CNPJs/CPFs</button>
+                    <button class="quick-prompt-btn bg-bgHover text-textMain px-2 py-1 rounded text-[11px] hover:bg-accent hover:text-white transition-colors border border-border" data-prompt="Liste de forma direta todas as penalidades, multas e sanções previstas no documento."><i class="fa-solid fa-gavel"></i> Penalidades</button>
+                    <button class="quick-prompt-btn bg-bgHover text-textMain px-2 py-1 rounded text-[11px] hover:bg-accent hover:text-white transition-colors border border-border" data-prompt="Quais são os prazos principais, validade e datas estipuladas?"><i class="fa-regular fa-calendar-check"></i> Prazos/Datas</button>
+                    <button class="quick-prompt-btn bg-bgHover text-textMain px-2 py-1 rounded text-[11px] hover:bg-accent hover:text-white transition-colors border border-border" data-prompt="Faça uma tabela contendo os itens solicitados, suas quantidades e valores (se houver)."><i class="fa-solid fa-table-list"></i> Criar Tabela</button>
                 </div>
 
                 <div class="p-2 bg-bgPanel border-t border-border flex-shrink-0">
@@ -287,23 +290,6 @@
                 </div>
             </div>
 
-            <div id="contentTools" class="hidden flex-1 flex-col overflow-y-auto bg-bgMain p-4 gap-6">
-                <section>
-                    <h3 class="text-[11px] font-bold text-textMuted mb-3 uppercase tracking-widest flex items-center gap-2">
-                        <i class="fa-solid fa-chart-pie"></i> Análise & Relatórios
-                    </h3>
-                    <div class="grid grid-cols-1 gap-3">
-                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Gere um relatório executivo destacando os pontos críticos deste documento: prazos importantes, multas aplicáveis, exigências técnicas/financeiras e contatos consolidados. Use formatação HTML clara com listas e títulos.">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Relatório de pontos críticos</h4>
-                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-regular fa-file-pdf text-xs"></i></div>
-                            </div>
-                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Gera um relatório executivo HTML/PDF com prazos, multas, exigências e contatos consolidados.</p>
-                        </div>
-                    </div>
-                </section>
-            </div>
-
             <div id="contentAnalysis" class="hidden flex-1 flex flex-col overflow-hidden bg-bgMain">
                 <div class="p-3 border-b border-border bg-bgPanel flex-shrink-0">
                     <button id="btnRunAnalysis" class="w-full bg-accent text-white rounded p-2 text-sm hover:bg-accentHover transition-colors flex items-center justify-center gap-2">
@@ -313,7 +299,10 @@
                 <div id="analysisResults" class="flex-1 overflow-y-auto p-4 text-sm text-textMain ai-formatted-content">
                     <div class="text-textMuted text-center mt-4 italic">
                         Clique acima para ler TODOS os PDFs carregados de uma só vez.<br><br>
-                        Os resultados serão grifados não apenas aqui, mas também <b>direto no seu PDF original</b>.
+                        Os resultados serão grifados não apenas aqui, mas também <b>direto no seu PDF original</b>:<br><br>
+                        <span class="highlight-yellow block mb-2 w-max mx-auto">Tópicos de Atenção</span>
+                        <span class="highlight-blue block mb-2 w-max mx-auto">Documentação</span>
+                        <span class="highlight-green block w-max mx-auto">Contatos</span>
                     </div>
                 </div>
             </div>
@@ -337,16 +326,23 @@
             </div>
 
             <div id="notesList" class="flex-1 overflow-y-auto p-3 flex flex-col gap-2">
-            </div>
+                </div>
         </div>
     </aside>
 
     <script>
         // ==========================================
-        // CONSTANTES GLOBAIS E TOAST
+        // CONSTANTES GLOBAIS
         // ==========================================
         const MAX_PAGES_TO_EXTRACT = 50;
 
+        function getMaxChars() {
+            return 200000; // Gemini 2.5 Flash
+        }
+
+        // ==========================================
+        // SISTEMA DE TOAST
+        // ==========================================
         function showToast(message, type = 'info', duration = 3500) {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
@@ -368,7 +364,7 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
         const state = {
-            files: [],
+            files: [], 
             activeFileId: null,
             zoom: 1.0,
             theme: localStorage.getItem('workspace_theme') || 'classico',
@@ -395,16 +391,14 @@
             extractionIndicator: document.getElementById('extractionIndicator'),
             extractionLabel: document.getElementById('extractionLabel'),
             tabChat: document.getElementById('tabChat'),
-            tabTools: document.getElementById('tabTools'),
             tabAnalysis: document.getElementById('tabAnalysis'),
             contentChat: document.getElementById('contentChat'),
-            contentTools: document.getElementById('contentTools'),
             contentAnalysis: document.getElementById('contentAnalysis'),
             btnRunAnalysis: document.getElementById('btnRunAnalysis'),
             analysisResults: document.getElementById('analysisResults'),
             toggleMultiDoc: document.getElementById('toggleMultiDoc'),
             chatScopeLabel: document.getElementById('chatScopeLabel'),
-            toolCards: document.querySelectorAll('.tool-card'),
+            quickPromptBtns: document.querySelectorAll('.quick-prompt-btn'),
             chatMessages: document.getElementById('chatMessages'),
             chatInput: document.getElementById('chatInput'),
             btnSendChat: document.getElementById('btnSendChat'),
@@ -414,7 +408,9 @@
             btnExportNotes: document.getElementById('btnExportNotes'),
         };
 
-        // UI - TOGGLE E ABAS
+        // ==========================================
+        // UI - TOGGLE SIDEBAR E MULTI-DOC
+        // ==========================================
         DOM.btnToggleSidebar.addEventListener('click', () => {
             if (DOM.leftSidebar.classList.contains('hidden')) {
                 DOM.leftSidebar.classList.remove('hidden');
@@ -435,36 +431,16 @@
             }
         });
 
-        function switchTab(activeTab, activeContent) {
-            [DOM.tabChat, DOM.tabAnalysis, DOM.tabTools].forEach(t => {
-                t.classList.replace('text-accent', 'text-textMuted');
-                t.classList.replace('border-accent', 'border-transparent');
-            });
-            [DOM.contentChat, DOM.contentAnalysis, DOM.contentTools].forEach(c => {
-                c.classList.add('hidden');
-                c.classList.remove('flex');
-            });
-            activeTab.classList.replace('text-textMuted', 'text-accent');
-            activeTab.classList.replace('border-transparent', 'border-accent');
-            activeContent.classList.remove('hidden');
-            activeContent.classList.add('flex');
-        }
-
-        DOM.tabChat.addEventListener('click', () => switchTab(DOM.tabChat, DOM.contentChat));
-        DOM.tabAnalysis.addEventListener('click', () => switchTab(DOM.tabAnalysis, DOM.contentAnalysis));
-        DOM.tabTools.addEventListener('click', () => switchTab(DOM.tabTools, DOM.contentTools));
-
-        DOM.toolCards.forEach(card => {
-            card.addEventListener('click', () => {
-                const prompt = card.getAttribute('data-prompt');
-                if (prompt) {
-                    switchTab(DOM.tabChat, DOM.contentChat);
-                    DOM.chatInput.value = prompt;
-                    askAI();
-                }
+        DOM.quickPromptBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                DOM.chatInput.value = btn.dataset.prompt;
+                askAI();
             });
         });
 
+        // ==========================================
+        // 2. SISTEMA DE TEMAS E CONFIG
+        // ==========================================
         function applyTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem('workspace_theme', theme);
@@ -636,7 +612,6 @@
         function removeFile(id) {
             const idx = state.files.findIndex(f => f.id === id);
             if (idx === -1) return;
-            
             URL.revokeObjectURL(state.files[idx].blobUrl);
             state.files.splice(idx, 1);
 
@@ -785,16 +760,16 @@
         }
 
         // ==========================================
-        // 5. CONEXÃO COM O SERVIDOR SEGURO (VERCEL)
+        // 5. CÉREBRO MULTI-IA CONECTADO NA VERCEL
         // ==========================================
         async function fetchFromAI(systemPrompt, userText) {
             try {
-                // Chama a SUA API segura hospedada na Vercel
+                // Chama a API segura hospedada na Vercel (onde a chave está escondida)
                 const res = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        pergunta: userText,
+                        pergunta: userText || "Gere uma resposta baseada nas instruções.",
                         textoPDF: systemPrompt || ""
                     })
                 });
@@ -808,7 +783,7 @@
                 return data.respostaIA;
 
             } catch (error) {
-                throw new Error(`Falha ao conectar com o servidor seguro: ${error.message}`);
+                throw new Error(`Servidor: ${error.message}`);
             }
         }
 
@@ -860,8 +835,8 @@
             DOM.btnSendChat.disabled = true;
             DOM.btnSendChat.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
+            const maxChars = getMaxChars();
             let docText = "";
-            const maxChars = 100000; // Limite de envio para não estourar a memória
 
             if (DOM.toggleMultiDoc.checked) {
                 if (state.files.length === 0) {
@@ -872,6 +847,9 @@
                 }
                 const allText = await gatherAllFilesText();
                 docText = allText.substring(0, maxChars);
+                if (allText.length > maxChars) {
+                    appendChatMessage('ai', `⚠️ <i>Aviso: Limite de IA alcançado. Analisando apenas a primeira parte dos documentos combinados.</i>`);
+                }
             } else {
                 const activeFile = state.files.find(f => f.id === state.activeFileId);
                 if (!activeFile || !activeFile.extractedText) {
@@ -881,6 +859,9 @@
                     return;
                 }
                 docText = activeFile.extractedText.substring(0, maxChars);
+                if (activeFile.extractedText.length > maxChars) {
+                    appendChatMessage('ai', `⚠️ <i>Aviso: Limite de IA atingido. Li as primeiras ~${Math.round(maxChars / 4000)}k palavras do documento.</i>`);
+                }
             }
 
             const historyContext = state.chatHistory.slice(-6).map(m => `[${m.role === 'user' ? 'Usuário' : 'IA'}]: ${m.content}`).join('\n');
@@ -930,13 +911,15 @@ ${docText}`;
             try {
                 document.querySelectorAll('.page-summary-bubble').forEach(b => b.remove());
 
-                const docText = activeFile.extractedText.substring(0, 100000);
+                const docText = activeFile.extractedText.substring(0, getMaxChars());
                 const prompt = `Faça um resumo ULTRA-CURTO (no máximo 2 frases) contendo a essência de CADA PÁGINA do documento abaixo.
 REGRA CRÍTICA: Retorne sua resposta em formato de lista estrita, sem textos extras, usando este padrão:
 PAGINA_1|resumo aqui...
 PAGINA_2|resumo aqui...`;
 
+                // Chama a Vercel invertendo a ordem pra encaixar no prompt
                 const answerRaw = await fetchFromAI(docText, prompt);
+                
                 answerRaw.split('\n').forEach(line => {
                     const match = line.match(/PAGINA_(\d+)\|(.*)/i);
                     if (match) {
@@ -971,8 +954,22 @@ PAGINA_2|resumo aqui...`;
         });
 
         // ==========================================
-        // 6. ANÁLISE GERAL (GRIFOS)
+        // 6. ANÁLISE GERAL (ABAS E GRIFOS)
         // ==========================================
+        function switchTab(activeTab, inactiveTab, activeContent, inactiveContent) {
+            activeTab.classList.replace('text-textMuted', 'text-accent');
+            activeTab.classList.replace('border-transparent', 'border-accent');
+            inactiveTab.classList.replace('text-accent', 'text-textMuted');
+            inactiveTab.classList.replace('border-accent', 'border-transparent');
+            activeContent.classList.remove('hidden');
+            activeContent.classList.add('flex');
+            inactiveContent.classList.add('hidden');
+            inactiveContent.classList.remove('flex');
+        }
+
+        DOM.tabChat.addEventListener('click', () => switchTab(DOM.tabChat, DOM.tabAnalysis, DOM.contentChat, DOM.contentAnalysis));
+        DOM.tabAnalysis.addEventListener('click', () => switchTab(DOM.tabAnalysis, DOM.tabChat, DOM.contentAnalysis, DOM.contentChat));
+
         function escapeRegExp(string) {
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
@@ -1014,8 +1011,15 @@ PAGINA_2|resumo aqui...`;
 
             try {
                 const allText = await gatherAllFilesText();
-                const maxChars = 100000;
+                const maxChars = getMaxChars();
                 const truncatedText = allText.substring(0, maxChars);
+                let warningMsg = "";
+
+                if (allText.length > maxChars) {
+                    warningMsg = `<div class="mb-4 p-3 bg-yellow-100/10 border border-yellow-500/50 text-yellow-600 text-xs rounded">
+                        <i class="fa-solid fa-triangle-exclamation"></i> <b>Limite de API:</b> A análise foi limitada ao começo dos documentos para não estourar a memória.
+                    </div>`;
+                }
 
                 const prompt = `Você é um analista rigoroso avaliando múltiplos editais. Analise TODOS os documentos fornecidos e consolide-os nestas três categorias exatas.
 
@@ -1037,7 +1041,7 @@ SEÇÕES OBRIGATÓRIAS:
                 const answerRaw = await fetchFromAI(truncatedText, prompt);
                 let answerHTML = answerRaw.replace(/```html/g, '').replace(/```/g, '');
 
-                DOM.analysisResults.innerHTML = DOMPurify.sanitize(answerHTML, {
+                DOM.analysisResults.innerHTML = warningMsg + DOMPurify.sanitize(answerHTML, {
                     ALLOWED_TAGS: ['h3', 'ul', 'li', 'span', 'b', 'strong', 'i', 'em', 'br', 'div', 'p'],
                     ALLOWED_ATTR: ['class']
                 });
