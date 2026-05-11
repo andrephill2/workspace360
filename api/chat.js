@@ -42,7 +42,8 @@ export default async function handler(req, res) {
   const promptCompleto = `Contexto do PDF:\n${body.textoPDF}\n\nResponda: ${body.pergunta}`;
 
   try {
-    const resposta = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+    // AQUI ESTÁ A CORREÇÃO: Voltando para o gemini-2.5-flash
+    const resposta = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
