@@ -4,163 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Workspace 360º - Análise de PDFs com IA</title>
-
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
-
     <script>
         tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        bgMain: 'var(--bg-main)',
-                        bgPanel: 'var(--bg-panel)',
-                        bgHover: 'var(--bg-hover)',
-                        textMain: 'var(--text-main)',
-                        textMuted: 'var(--text-muted)',
-                        accent: 'var(--accent)',
-                        accentHover: 'var(--accent-hover)',
-                        border: 'var(--border-color)'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                    }
-                }
-            }
+            darkMode: 'class', theme: { extend: { colors: { bgMain: 'var(--bg-main)', bgPanel: 'var(--bg-panel)', bgHover: 'var(--bg-hover)', textMain: 'var(--text-main)', textMuted: 'var(--text-muted)', accent: 'var(--accent)', accentHover: 'var(--accent-hover)', border: 'var(--border-color)' }, fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], } } }
         }
     </script>
-
     <style>
-        /* Variáveis de Tema */
-        :root {
-            --bg-main: #f3f4f6;
-            --bg-panel: #ffffff;
-            --bg-hover: #e5e7eb;
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
-            --accent: #2563eb;
-            --accent-hover: #1d4ed8;
-            --border-color: #d1d5db;
-        }
-
-        [data-theme="noturno"] {
-            --bg-main: #111827;
-            --bg-panel: #1f2937;
-            --bg-hover: #374151;
-            --text-main: #f9fafb;
-            --text-muted: #9ca3af;
-            --accent: #3b82f6;
-            --accent-hover: #60a5fa;
-            --border-color: #374151;
-        }
-
-        [data-theme="dracula"] {
-            --bg-main: #282a36;
-            --bg-panel: #44475a;
-            --bg-hover: #6272a4;
-            --text-main: #f8f8f2;
-            --text-muted: #bd93f9;
-            --accent: #ff79c6;
-            --accent-hover: #ff92df;
-            --border-color: #6272a4;
-        }
-
-        /* Scrollbar Customizada */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-main); }
-        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
-        
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Utils do PDF */
-        .pdf-page-wrapper {
-            position: relative;
-            margin-bottom: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            background: white;
-        }
-        
-        .textLayer { opacity: 1; z-index: 2; }
-        .textLayer span { color: transparent !important; cursor: text; }
-        .textLayer span::selection { background-color: rgba(37, 99, 235, 0.3) !important; color: transparent !important; }
-        .textLayer span::-moz-selection { background-color: rgba(37, 99, 235, 0.3) !important; color: transparent !important; }
-        
-        /* Grifos no PDF */
-        .pdf-highlight-yellow { background-color: rgba(253, 224, 71, 0.45); border-radius: 2px; }
-        .pdf-highlight-blue { background-color: rgba(147, 197, 253, 0.45); border-radius: 2px; }
-        .pdf-highlight-green { background-color: rgba(134, 239, 172, 0.45); border-radius: 2px; }
-
-        /* Spinner */
-        .loader {
-            border: 3px solid var(--bg-hover);
-            border-top: 3px solid var(--accent);
-            border-radius: 50%;
-            width: 20px; height: 20px;
-            animation: spin 1s linear infinite;
-        }
+        :root { --bg-main: #f3f4f6; --bg-panel: #ffffff; --bg-hover: #e5e7eb; --text-main: #1f2937; --text-muted: #6b7280; --accent: #2563eb; --accent-hover: #1d4ed8; --border-color: #d1d5db; }
+        [data-theme="noturno"] { --bg-main: #111827; --bg-panel: #1f2937; --bg-hover: #374151; --text-main: #f9fafb; --text-muted: #9ca3af; --accent: #3b82f6; --accent-hover: #60a5fa; --border-color: #374151; }
+        [data-theme="dracula"] { --bg-main: #282a36; --bg-panel: #44475a; --bg-hover: #6272a4; --text-main: #f8f8f2; --text-muted: #bd93f9; --accent: #ff79c6; --accent-hover: #ff92df; --border-color: #6272a4; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; } ::-webkit-scrollbar-track { background: var(--bg-main); } ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; } ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .pdf-page-wrapper { position: relative; margin-bottom: 1rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); background: white; }
+        .textLayer { opacity: 1; z-index: 2; } .textLayer span { color: transparent !important; cursor: text; } .textLayer span::selection { background-color: rgba(37, 99, 235, 0.3) !important; color: transparent !important; } .textLayer span::-moz-selection { background-color: rgba(37, 99, 235, 0.3) !important; color: transparent !important; }
+        .pdf-highlight-yellow { background-color: rgba(253, 224, 71, 0.45); border-radius: 2px; } .pdf-highlight-blue { background-color: rgba(147, 197, 253, 0.45); border-radius: 2px; } .pdf-highlight-green { background-color: rgba(134, 239, 172, 0.45); border-radius: 2px; }
+        .loader { border: 3px solid var(--bg-hover); border-top: 3px solid var(--accent); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Highlights no Painel Lateral */
-        .highlight-yellow { background-color: rgba(253, 224, 71, 0.8); color: #854d0e; padding: 0.1rem 0.25rem; border-radius: 0.25rem; font-weight: 600; cursor: pointer;}
-        .highlight-blue { background-color: rgba(147, 197, 253, 0.8); color: #1e3a8a; padding: 0.1rem 0.25rem; border-radius: 0.25rem; font-weight: 600; cursor: pointer;}
-        .highlight-green { background-color: rgba(134, 239, 172, 0.8); color: #14532d; padding: 0.1rem 0.25rem; border-radius: 0.25rem; font-weight: 600; cursor: pointer;}
-        
-        [data-theme="noturno"] .highlight-yellow, [data-theme="dracula"] .highlight-yellow { background-color: rgba(253, 224, 71, 0.3); color: #fde047; }
-        [data-theme="noturno"] .highlight-blue, [data-theme="dracula"] .highlight-blue { background-color: rgba(147, 197, 253, 0.3); color: #93c5fd; }
-        [data-theme="noturno"] .highlight-green, [data-theme="dracula"] .highlight-green { background-color: rgba(134, 239, 172, 0.3); color: #86efac; }
-        
-        /* Estilos Markdown para o HTML da IA */
-        .ai-formatted-content h3 { font-weight: bold; margin-top: 1rem; margin-bottom: 0.5rem; color: var(--accent); border-bottom: 1px solid var(--border-color); padding-bottom: 0.25rem;}
-        .ai-formatted-content ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 1rem; }
-        .ai-formatted-content li { margin-bottom: 0.5rem; line-height: 1.5;}
-
-        /* Transições de Layout */
+        .highlight-yellow { background-color: rgba(253, 224, 71, 0.8); color: #854d0e; padding: 0.1rem 0.25rem; border-radius: 0.25rem; font-weight: 600; cursor: pointer;} .highlight-blue { background-color: rgba(147, 197, 253, 0.8); color: #1e3a8a; padding: 0.1rem 0.25rem; border-radius: 0.25rem; font-weight: 600; cursor: pointer;} .highlight-green { background-color: rgba(134, 239, 172, 0.8); color: #14532d; padding: 0.1rem 0.25rem; border-radius: 0.25rem; font-weight: 600; cursor: pointer;}
+        [data-theme="noturno"] .highlight-yellow, [data-theme="dracula"] .highlight-yellow { background-color: rgba(253, 224, 71, 0.3); color: #fde047; } [data-theme="noturno"] .highlight-blue, [data-theme="dracula"] .highlight-blue { background-color: rgba(147, 197, 253, 0.3); color: #93c5fd; } [data-theme="noturno"] .highlight-green, [data-theme="dracula"] .highlight-green { background-color: rgba(134, 239, 172, 0.3); color: #86efac; }
+        .ai-formatted-content h3 { font-weight: bold; margin-top: 1rem; margin-bottom: 0.5rem; color: var(--accent); border-bottom: 1px solid var(--border-color); padding-bottom: 0.25rem;} .ai-formatted-content ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 1rem; } .ai-formatted-content li { margin-bottom: 0.5rem; line-height: 1.5;}
         .transition-width { transition: width 0.3s ease, flex 0.3s ease; }
-
-        /* Toast de notificação */
-        #toastContainer {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            pointer-events: none;
-        }
-        .toast {
-            padding: 0.65rem 1rem;
-            border-radius: 0.5rem;
-            font-size: 0.8rem;
-            font-weight: 500;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            opacity: 0;
-            transform: translateY(8px);
-            transition: opacity 0.25s, transform 0.25s;
-            pointer-events: none;
-            max-width: 280px;
-        }
-        .toast.show { opacity: 1; transform: translateY(0); }
-        .toast-info { background: var(--accent); color: white; }
-        .toast-error { background: #ef4444; color: white; }
-        .toast-success { background: #22c55e; color: white; }
-        .toast-warn { background: #f59e0b; color: white; }
-
-        /* Flash de confirmação ao salvar nota */
-        @keyframes noteFlash {
-            0%   { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(37,99,235,0.3); }
-            100% { border-color: var(--border-color); box-shadow: none; }
-        }
-        .note-saved { animation: noteFlash 0.8s ease forwards; }
+        #toastContainer { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
+        .toast { padding: 0.65rem 1rem; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.2); opacity: 0; transform: translateY(8px); transition: opacity 0.25s, transform 0.25s; pointer-events: none; max-width: 280px; }
+        .toast.show { opacity: 1; transform: translateY(0); } .toast-info { background: var(--accent); color: white; } .toast-error { background: #ef4444; color: white; } .toast-success { background: #22c55e; color: white; } .toast-warn { background: #f59e0b; color: white; }
+        @keyframes noteFlash { 0% { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(37,99,235,0.3); } 100% { border-color: var(--border-color); box-shadow: none; } } .note-saved { animation: noteFlash 0.8s ease forwards; }
     </style>
 </head>
 <body class="h-screen w-screen overflow-hidden bg-bgMain text-textMain flex font-sans transition-colors duration-300">
@@ -176,7 +48,6 @@
                 <i class="fa-solid fa-gear"></i>
             </button>
         </div>
-
         <div id="settingsPanel" class="hidden p-4 border-b border-border bg-bgMain text-sm flex-shrink-0">
             <div class="mb-3">
                 <label class="block text-xs font-semibold mb-1 text-textMuted">Tema Visual</label>
@@ -186,22 +57,12 @@
                     <option value="dracula">Drácula (Dev)</option>
                 </select>
             </div>
-            <div class="mb-3">
-                <label class="block text-xs font-semibold mb-1 text-textMuted">Motor IA (Agnóstico)</label>
-                <select id="aiModelSelector" class="w-full bg-bgPanel text-textMain border border-border rounded p-1.5 focus:outline-none focus:border-accent">
-                    <option value="gemini">Google (Gemini 2.5 Flash)</option>
-                    <option value="groq">Groq (Llama 3.3 70B)</option>
-                    <option value="kimi">Kimi (Moonshot)</option>
-                </select>
-            </div>
-            <div class="mb-2">
-                <label class="block text-xs font-semibold mb-1 text-textMuted">
-                    Chave API <i class="fa-solid fa-lock text-xs" title="Salvo apenas no seu navegador"></i>
-                </label>
-                <input type="password" id="apiKeyInput" placeholder="Sua API Key..." class="w-full bg-bgPanel text-textMain border border-border rounded p-1.5 focus:outline-none focus:border-accent">
+            <div class="mb-2 text-center p-2 bg-green-50 border border-green-200 rounded-md">
+                <span class="text-xs font-semibold text-green-700">
+                    <i class="fa-solid fa-shield-check"></i> IA Conectada e Segura (Nuvem)
+                </span>
             </div>
         </div>
-
         <div class="p-4 border-b border-border flex-shrink-0">
             <label for="fileUpload" class="border-2 border-dashed border-border rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:border-accent hover:bg-bgHover transition-colors group">
                 <i class="fa-solid fa-cloud-arrow-up text-2xl text-textMuted group-hover:text-accent mb-2"></i>
@@ -210,7 +71,6 @@
                 <input type="file" id="fileUpload" accept="application/pdf" class="hidden" multiple>
             </label>
         </div>
-
         <div class="flex-1 overflow-y-auto p-2" id="fileList">
             <div class="text-center text-textMuted text-sm mt-4 italic" id="emptyFileMsg">Nenhum arquivo carregado.</div>
         </div>
@@ -251,9 +111,7 @@
     </main>
 
     <aside id="rightSidebar" class="w-1/4 h-full bg-bgPanel border-l border-border flex flex-col z-10 shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.1)] transition-width flex-shrink-0">
-        
         <div class="h-[60%] border-b border-border flex flex-col bg-bgMain">
-            
             <div class="flex border-b border-border bg-bgPanel flex-shrink-0">
                 <button id="tabChat" class="flex-1 p-2.5 text-[13px] font-semibold text-accent border-b-2 border-accent transition-colors flex justify-center items-center gap-1.5">
                     <i class="fa-solid fa-robot"></i> Chat
@@ -282,7 +140,7 @@
 
                 <div id="chatMessages" class="flex-1 overflow-y-auto p-3 text-sm flex flex-col gap-3">
                     <div class="bg-bgPanel p-2 rounded-lg border border-border self-start max-w-[85%] text-textMuted">
-                        Faça o upload de um PDF e pergunte algo específico, ou escolha uma ferramenta na aba <b>Apps</b>.
+                        Faça o upload de um PDF e pergunte algo específico. Use o 👍/👎 nas respostas para ensinar a IA!
                     </div>
                 </div>
 
@@ -307,125 +165,10 @@
                                 <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Relatório de pontos críticos</h4>
                                 <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-regular fa-file-pdf text-xs"></i></div>
                             </div>
-                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Gera um relatório executivo HTML/PDF com prazos, multas, exigências e contatos consolidados.</p>
-                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-red-500/10 text-red-600 dark:text-red-400">🔥 Alta demanda</span>
-                        </div>
-
-                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Extraia cronologicamente todas as datas, prazos e eventos mencionados no documento. Apresente em formato de linha do tempo visual, destacando em negrito os eventos mais críticos ou com prazo muito curto, gerando alertas sobre eles.">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Timeline de prazos</h4>
-                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-regular fa-calendar-days text-xs"></i></div>
-                            </div>
-                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Extrai todas as datas do edital e cria uma linha do tempo visual interativa com alertas.</p>
-                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-red-500/10 text-red-600 dark:text-red-400">🔥 Alta demanda</span>
-                        </div>
-
-                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Analise as cláusulas deste documento e construa um Mapa de Riscos estruturado. Identifique cláusulas restritivas, ambiguidades ou penalidades severas. Para cada risco, classifique a Probabilidade (Alta/Média/Baixa) e o Impacto Financeiro ou Operacional (Alto/Médio/Baixo).">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Mapa de riscos</h4>
-                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-solid fa-triangle-exclamation text-xs"></i></div>
-                            </div>
-                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Matriz probabilidade × impacto gerada pela IA com base nas cláusulas identificadas.</p>
-                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-yellow-500/10 text-yellow-600 dark:text-yellow-400">⚙️ Complexo</span>
-                        </div>
-
-                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Atribua um 'Score de Viabilidade' de 0 a 10 para a participação neste edital. Justifique detalhadamente a nota avaliando rigorosamente: complexidade documental, rigidez dos prazos, exigências de qualificação técnica e multas estipuladas.">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Score de viabilidade</h4>
-                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-solid fa-star-half-stroke text-xs"></i></div>
-                            </div>
-                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Pontua o edital de 0–10 considerando complexidade documental, prazos apertados e valor estimado.</p>
-                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400">⭐ Diferencial</span>
                         </div>
                     </div>
                 </section>
-
-                <section>
-                    <h3 class="text-[11px] font-bold text-textMuted mb-3 uppercase tracking-widest flex items-center gap-2">
-                        <i class="fa-solid fa-folder-tree"></i> Produtividade Documental
-                    </h3>
-                    <div class="grid grid-cols-1 gap-3">
-                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Gere um checklist exaustivo contendo TODOS os documentos exigidos para habilitação jurídica, fiscal, trabalhista, qualificação técnica e qualificação econômico-financeira. Formate como uma lista interativa usando `[ ]` antes de cada item.">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Checklist de habilitação</h4>
-                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-solid fa-list-check text-xs"></i></div>
-                            </div>
-                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Gera uma lista interativa (com checkboxes) de toda documentação exigida para habilitação.</p>
-                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-red-500/10 text-red-600 dark:text-red-400">🔥 Alta demanda</span>
-                        </div>
-
-                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Comparador Ativado: Por favor, analise as diferenças cruciais entre os arquivos carregados (verifique se a opção 'Contexto Múltiplo' está ativa). Foque nas disparidades de prazos, documentos de habilitação solicitados, valores e penalidades contratuais.">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Comparador de editais</h4>
-                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-solid fa-code-compare text-xs"></i></div>
-                            </div>
-                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Side-by-side entre dois ou mais editais carregados, destacando diferenças relevantes.</p>
-                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-yellow-500/10 text-yellow-600 dark:text-yellow-400">⚙️ Complexo</span>
-                        </div>
-
-                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Faça uma varredura semântica profunda no texto. Encontre e transcreva as cláusulas e trechos que, mesmo usando palavras diferentes, falem sobre intenções como: garantia dos produtos/serviços, prazos de execução/entrega, penalidades e rescisão.">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Busca semântica</h4>
-                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-solid fa-magnifying-glass-chart text-xs"></i></div>
-                            </div>
-                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Encontra trechos por intenção ("prazo de entrega", "garantia"), não apenas palavra exata.</p>
-                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-green-500/10 text-green-600 dark:text-green-400">✓ Simples</span>
-                        </div>
-
-                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Mapeie o documento: identifique de forma resumida o número das páginas de referência onde se encontram os blocos principais: Termo de Referência, Exigências de Habilitação, Penalidades/Multas, e Anexos/Declarações.">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Marcadores de página</h4>
-                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-regular fa-bookmark text-xs"></i></div>
-                            </div>
-                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Salva páginas específicas com etiqueta personalizada para navegação rápida.</p>
-                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-green-500/10 text-green-600 dark:text-green-400">✓ Simples</span>
-                        </div>
-                    </div>
-                </section>
-
-                <section>
-                    <h3 class="text-[11px] font-bold text-textMuted mb-3 uppercase tracking-widest flex items-center gap-2">
-                        <i class="fa-solid fa-file-export"></i> Exportação
-                    </h3>
-                    <div class="grid grid-cols-1 gap-3">
-                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Gere a estrutura de um Relatório em formato de texto contendo: Capa com os dados principais do edital, Sumário Executivo do objeto, Checklist resumido de habilitação e um Mapa de Riscos consolidado. Estruture muito bem para a exportação.">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Exportar relatório PDF</h4>
-                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-solid fa-file-export text-xs"></i></div>
-                            </div>
-                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Gera PDF com capa, sumário executivo, checklist e mapa de riscos pronto para compartilhar.</p>
-                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-red-500/10 text-red-600 dark:text-red-400">🔥 Alta demanda</span>
-                        </div>
-
-                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Extraia detalhadamente todos os itens licitados mencionados neste edital/termo de referência e estruture-os como uma tabela CSV (usando ponto e vírgula). Colunas obrigatórias: Lote/Item, Descrição Completa, Quantidade, Valor Estimado (se aplicável) e Prazo Específico de Entrega.">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Exportar para planilha</h4>
-                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-solid fa-file-excel text-xs"></i></div>
-                            </div>
-                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Tabela .xlsx com itens licitados, quantidades, valores, prazos e documentos exigidos.</p>
-                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400">⭐ Diferencial</span>
-                        </div>
-
-                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Comporte-se como um analista sénior de licitações. Redija um rascunho de e-mail formal direcionado ao Pregoeiro ou Comissão de Contratação. O e-mail deve solicitar esclarecimento ou levantar pedido de impugnação sobre as principais cláusulas ambíguas ou restritivas que você encontrar no documento.">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Rascunho de e-mail</h4>
-                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-solid fa-envelope-open-text text-xs"></i></div>
-                            </div>
-                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">IA gera minuta de e-mail formal de pedido de esclarecimentos ou impugnação com base no edital.</p>
-                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400">⭐ Diferencial</span>
-                        </div>
-
-                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Analise este edital ou contrato especificamente sob a ótica da Lei de Licitações. Identifique, liste e explique qualquer cláusula que possa ser considerada ilegal, abusiva, ou que restrinja indevidamente o caráter competitivo da licitação, citando possíveis bases de impugnação.">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Detector de cláusulas abusivas</h4>
-                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-solid fa-scale-unbalanced text-xs"></i></div>
-                            </div>
-                            <p class="text-[11px] text-textMuted mb-3 leading-relaxed">Identifica cláusulas restritivas à competição ou potencialmente ilegais segundo a Lei 14.133/2021.</p>
-                            <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-semibold bg-yellow-500/10 text-yellow-600 dark:text-yellow-400">⚙️ Complexo</span>
-                        </div>
-                    </div>
-                </section>
-                </div>
+            </div>
 
             <div id="contentAnalysis" class="hidden flex-1 flex flex-col overflow-hidden bg-bgMain">
                 <div class="p-3 border-b border-border bg-bgPanel flex-shrink-0">
@@ -436,10 +179,7 @@
                 <div id="analysisResults" class="flex-1 overflow-y-auto p-4 text-sm text-textMain ai-formatted-content">
                     <div class="text-textMuted text-center mt-4 italic">
                         Clique acima para ler TODOS os PDFs carregados de uma só vez.<br><br>
-                        Os resultados serão grifados não apenas aqui, mas também <b>direto no seu PDF original</b>:<br><br>
-                        <span class="highlight-yellow block mb-2 w-max mx-auto">Tópicos de Atenção</span>
-                        <span class="highlight-blue block mb-2 w-max mx-auto">Documentação</span>
-                        <span class="highlight-green block w-max mx-auto">Contatos</span>
+                        Os resultados serão grifados não apenas aqui, mas também <b>direto no seu PDF original</b>.
                     </div>
                 </div>
             </div>
@@ -462,574 +202,260 @@
                 </div>
             </div>
 
-            <div id="notesList" class="flex-1 overflow-y-auto p-3 flex flex-col gap-2">
-                </div>
+            <div id="notesList" class="flex-1 overflow-y-auto p-3 flex flex-col gap-2"></div>
         </div>
     </aside>
 
     <script>
-        // ==========================================
-        // CONSTANTES GLOBAIS
-        // ==========================================
         const MAX_PAGES_TO_EXTRACT = 50;
 
-        function getMaxChars() {
-            if (state.aiModel === 'groq') return 28000;
-            if (state.aiModel === 'kimi') return 32000;
-            return 200000; // Gemini 2.5 Flash
-        }
+        function getMaxChars() { return 200000; }
 
-        // ==========================================
-        // SISTEMA DE TOAST
-        // ==========================================
         function showToast(message, type = 'info', duration = 3500) {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
             toast.textContent = message;
             container.appendChild(toast);
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => toast.classList.add('show'));
-            });
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 300);
-            }, duration);
+            requestAnimationFrame(() => requestAnimationFrame(() => toast.classList.add('show')));
+            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, duration);
         }
 
-        // ==========================================
-        // 1. CONFIGURAÇÕES E ESTADOS GERAIS
-        // ==========================================
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-        const state = {
-            files: [],
-            activeFileId: null,
-            zoom: 1.0,
-            theme: localStorage.getItem('workspace_theme') || 'classico',
-            aiModel: localStorage.getItem('workspace_aimodel') || 'gemini',
-            apiKey: localStorage.getItem('workspace_apikey') || '',
-            chatHistory: []
-        };
+        const state = { files: [], activeFileId: null, zoom: 1.0, chatHistory: [] };
 
         const DOM = {
-            leftSidebar: document.getElementById('leftSidebar'),
-            mainViewer: document.getElementById('mainViewer'),
-            btnToggleSidebar: document.getElementById('btnToggleSidebar'),
-            btnSummarizePages: document.getElementById('btnSummarizePages'),
-            themeSelector: document.getElementById('themeSelector'),
-            aiModelSelector: document.getElementById('aiModelSelector'),
-            apiKeyInput: document.getElementById('apiKeyInput'),
-            btnSettings: document.getElementById('btnSettings'),
-            settingsPanel: document.getElementById('settingsPanel'),
-            fileUpload: document.getElementById('fileUpload'),
-            fileList: document.getElementById('fileList'),
-            emptyFileMsg: document.getElementById('emptyFileMsg'),
-            pdfRenderArea: document.getElementById('pdfRenderArea'),
-            pdfEmptyState: document.getElementById('pdfEmptyState'),
-            currentFileName: document.getElementById('currentFileName'),
-            btnZoomIn: document.getElementById('btnZoomIn'),
-            btnZoomOut: document.getElementById('btnZoomOut'),
-            zoomLevel: document.getElementById('zoomLevel'),
-            extractionIndicator: document.getElementById('extractionIndicator'),
-            extractionLabel: document.getElementById('extractionLabel'),
-            
-            // Abas Laterais
-            tabChat: document.getElementById('tabChat'),
-            tabTools: document.getElementById('tabTools'),
-            tabAnalysis: document.getElementById('tabAnalysis'),
-            contentChat: document.getElementById('contentChat'),
-            contentTools: document.getElementById('contentTools'),
-            contentAnalysis: document.getElementById('contentAnalysis'),
-            
-            btnRunAnalysis: document.getElementById('btnRunAnalysis'),
-            analysisResults: document.getElementById('analysisResults'),
-            toggleMultiDoc: document.getElementById('toggleMultiDoc'),
-            chatScopeLabel: document.getElementById('chatScopeLabel'),
-            toolCards: document.querySelectorAll('.tool-card'),
-            chatMessages: document.getElementById('chatMessages'),
-            chatInput: document.getElementById('chatInput'),
-            btnSendChat: document.getElementById('btnSendChat'),
-            noteInput: document.getElementById('noteInput'),
-            btnAddNote: document.getElementById('btnAddNote'),
-            notesList: document.getElementById('notesList'),
-            btnExportNotes: document.getElementById('btnExportNotes'),
+            leftSidebar: document.getElementById('leftSidebar'), mainViewer: document.getElementById('mainViewer'),
+            btnToggleSidebar: document.getElementById('btnToggleSidebar'), btnSummarizePages: document.getElementById('btnSummarizePages'),
+            themeSelector: document.getElementById('themeSelector'), btnSettings: document.getElementById('btnSettings'),
+            settingsPanel: document.getElementById('settingsPanel'), fileUpload: document.getElementById('fileUpload'),
+            fileList: document.getElementById('fileList'), emptyFileMsg: document.getElementById('emptyFileMsg'),
+            pdfRenderArea: document.getElementById('pdfRenderArea'), pdfEmptyState: document.getElementById('pdfEmptyState'),
+            currentFileName: document.getElementById('currentFileName'), btnZoomIn: document.getElementById('btnZoomIn'),
+            btnZoomOut: document.getElementById('btnZoomOut'), zoomLevel: document.getElementById('zoomLevel'),
+            extractionIndicator: document.getElementById('extractionIndicator'), extractionLabel: document.getElementById('extractionLabel'),
+            tabChat: document.getElementById('tabChat'), tabTools: document.getElementById('tabTools'),
+            tabAnalysis: document.getElementById('tabAnalysis'), contentChat: document.getElementById('contentChat'),
+            contentTools: document.getElementById('contentTools'), contentAnalysis: document.getElementById('contentAnalysis'),
+            btnRunAnalysis: document.getElementById('btnRunAnalysis'), analysisResults: document.getElementById('analysisResults'),
+            toggleMultiDoc: document.getElementById('toggleMultiDoc'), chatScopeLabel: document.getElementById('chatScopeLabel'),
+            toolCards: document.querySelectorAll('.tool-card'), chatMessages: document.getElementById('chatMessages'),
+            chatInput: document.getElementById('chatInput'), btnSendChat: document.getElementById('btnSendChat'),
+            noteInput: document.getElementById('noteInput'), btnAddNote: document.getElementById('btnAddNote'),
+            notesList: document.getElementById('notesList'), btnExportNotes: document.getElementById('btnExportNotes'),
         };
 
-        // ==========================================
-        // UI - TOGGLE E ABAS
-        // ==========================================
         DOM.btnToggleSidebar.addEventListener('click', () => {
-            if (DOM.leftSidebar.classList.contains('hidden')) {
-                DOM.leftSidebar.classList.remove('hidden');
-                DOM.mainViewer.classList.replace('w-3/4', 'w-2/4');
-            } else {
-                DOM.leftSidebar.classList.add('hidden');
-                DOM.mainViewer.classList.replace('w-2/4', 'w-3/4');
-            }
+            if (DOM.leftSidebar.classList.contains('hidden')) { DOM.leftSidebar.classList.remove('hidden'); DOM.mainViewer.classList.replace('w-3/4', 'w-2/4'); }
+            else { DOM.leftSidebar.classList.add('hidden'); DOM.mainViewer.classList.replace('w-2/4', 'w-3/4'); }
         });
 
         DOM.toggleMultiDoc.addEventListener('change', (e) => {
-            if (e.target.checked) {
-                DOM.chatScopeLabel.textContent = "Todos os Arquivos";
-                DOM.chatScopeLabel.classList.replace('text-textMuted', 'text-accent');
-            } else {
-                DOM.chatScopeLabel.textContent = "Documento Atual";
-                DOM.chatScopeLabel.classList.replace('text-accent', 'text-textMuted');
-            }
+            if (e.target.checked) { DOM.chatScopeLabel.textContent = "Todos os Arquivos"; DOM.chatScopeLabel.classList.replace('text-textMuted', 'text-accent'); }
+            else { DOM.chatScopeLabel.textContent = "Documento Atual"; DOM.chatScopeLabel.classList.replace('text-accent', 'text-textMuted'); }
         });
 
-        // Função Genérica para gerir as Abas (Tabs) da Direita
         function switchTab(activeTab, activeContent) {
-            // Desativa Todas
-            [DOM.tabChat, DOM.tabAnalysis, DOM.tabTools].forEach(t => {
-                t.classList.replace('text-accent', 'text-textMuted');
-                t.classList.replace('border-accent', 'border-transparent');
-            });
-            [DOM.contentChat, DOM.contentAnalysis, DOM.contentTools].forEach(c => {
-                c.classList.add('hidden');
-                c.classList.remove('flex');
-            });
-
-            // Ativa a Selecionada
-            activeTab.classList.replace('text-textMuted', 'text-accent');
-            activeTab.classList.replace('border-transparent', 'border-accent');
-            activeContent.classList.remove('hidden');
-            activeContent.classList.add('flex');
+            [DOM.tabChat, DOM.tabAnalysis, DOM.tabTools].forEach(t => { t.classList.replace('text-accent', 'text-textMuted'); t.classList.replace('border-accent', 'border-transparent'); });
+            [DOM.contentChat, DOM.contentAnalysis, DOM.contentTools].forEach(c => { c.classList.add('hidden'); c.classList.remove('flex'); });
+            activeTab.classList.replace('text-textMuted', 'text-accent'); activeTab.classList.replace('border-transparent', 'border-accent');
+            activeContent.classList.remove('hidden'); activeContent.classList.add('flex');
         }
 
         DOM.tabChat.addEventListener('click', () => switchTab(DOM.tabChat, DOM.contentChat));
         DOM.tabAnalysis.addEventListener('click', () => switchTab(DOM.tabAnalysis, DOM.contentAnalysis));
         DOM.tabTools.addEventListener('click', () => switchTab(DOM.tabTools, DOM.contentTools));
 
-        // Listener das Novas Ferramentas (Tool Cards)
         DOM.toolCards.forEach(card => {
             card.addEventListener('click', () => {
                 const prompt = card.getAttribute('data-prompt');
-                if (prompt) {
-                    // Volta para a aba Chat e preenche a caixa de texto
-                    switchTab(DOM.tabChat, DOM.contentChat);
-                    DOM.chatInput.value = prompt;
-                    // Gatilho imediato para perguntar à IA
-                    askAI();
-                }
+                if (prompt) { switchTab(DOM.tabChat, DOM.contentChat); DOM.chatInput.value = prompt; askAI(); }
             });
         });
 
-        // ==========================================
-        // 2. SISTEMA DE TEMAS E CONFIG
-        // ==========================================
-        function applyTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('workspace_theme', theme);
-            DOM.themeSelector.value = theme;
-        }
+        function applyTheme(theme) { document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('workspace_theme', theme); DOM.themeSelector.value = theme; }
+        DOM.themeSelector.addEventListener('change', (e) => applyTheme(e.target.value)); applyTheme(state.theme);
+        DOM.btnSettings.addEventListener('click', () => DOM.settingsPanel.classList.toggle('hidden'));
 
-        DOM.themeSelector.addEventListener('change', (e) => applyTheme(e.target.value));
-        applyTheme(state.theme);
-
-        function updateApiKeyPlaceholder() {
-            if (state.aiModel === 'gemini') DOM.apiKeyInput.placeholder = "Sua API Key do Google...";
-            else if (state.aiModel === 'groq') DOM.apiKeyInput.placeholder = "Sua API Key do Groq...";
-            else if (state.aiModel === 'kimi') DOM.apiKeyInput.placeholder = "Sua API Key do Moonshot...";
-        }
-
-        DOM.aiModelSelector.value = state.aiModel;
-        updateApiKeyPlaceholder();
-        DOM.aiModelSelector.addEventListener('change', (e) => {
-            state.aiModel = e.target.value;
-            localStorage.setItem('workspace_aimodel', state.aiModel);
-            updateApiKeyPlaceholder();
-        });
-
-        DOM.apiKeyInput.value = state.apiKey;
-        DOM.apiKeyInput.addEventListener('input', (e) => {
-            state.apiKey = e.target.value;
-            localStorage.setItem('workspace_apikey', state.apiKey);
-        });
-
-        DOM.btnSettings.addEventListener('click', () => {
-            DOM.settingsPanel.classList.toggle('hidden');
-        });
-
-        // ==========================================
-        // 3. BANCO DE DADOS LOCAL (IndexedDB para Notas)
-        // ==========================================
-        const dbName = "Workspace360DB";
-        let db;
-
-        const initDB = () => {
-            const request = indexedDB.open(dbName, 1);
-            request.onupgradeneeded = (e) => {
-                db = e.target.result;
-                if (!db.objectStoreNames.contains('notes')) {
-                    db.createObjectStore('notes', { keyPath: 'id', autoIncrement: true });
-                }
-            };
-            request.onsuccess = (e) => { db = e.target.result; loadNotes(); };
-            request.onerror = (e) => console.error("Erro no DB:", e);
-        };
-
-        const addNoteToDB = (text) => {
-            const transaction = db.transaction(['notes'], 'readwrite');
-            const store = transaction.objectStore('notes');
-            store.add({ text, timestamp: new Date().toISOString() });
-            transaction.oncomplete = () => loadNotes();
-        };
-
-        const deleteNoteFromDB = (id) => {
-            const transaction = db.transaction(['notes'], 'readwrite');
-            const store = transaction.objectStore('notes');
-            store.delete(id);
-            transaction.oncomplete = () => loadNotes();
-        };
-
-        const loadNotes = () => {
-            const transaction = db.transaction(['notes'], 'readonly');
-            const store = transaction.objectStore('notes');
-            const request = store.getAll();
-            request.onsuccess = () => renderNotes(request.result);
-        };
-
+        const dbName = "Workspace360DB"; let db;
+        const initDB = () => { const request = indexedDB.open(dbName, 1); request.onupgradeneeded = (e) => { db = e.target.result; if (!db.objectStoreNames.contains('notes')) db.createObjectStore('notes', { keyPath: 'id', autoIncrement: true }); }; request.onsuccess = (e) => { db = e.target.result; loadNotes(); }; request.onerror = (e) => console.error("Erro no DB:", e); };
+        const addNoteToDB = (text) => { const transaction = db.transaction(['notes'], 'readwrite'); const store = transaction.objectStore('notes'); store.add({ text, timestamp: new Date().toISOString() }); transaction.oncomplete = () => loadNotes(); };
+        const deleteNoteFromDB = (id) => { const transaction = db.transaction(['notes'], 'readwrite'); const store = transaction.objectStore('notes'); store.delete(id); transaction.oncomplete = () => loadNotes(); };
+        const loadNotes = () => { const transaction = db.transaction(['notes'], 'readonly'); const store = transaction.objectStore('notes'); const request = store.getAll(); request.onsuccess = () => renderNotes(request.result); };
         const renderNotes = (notes) => {
             DOM.notesList.innerHTML = '';
-            if (notes.length === 0) {
-                DOM.notesList.innerHTML = '<div class="text-xs text-textMuted text-center mt-2 italic">Nenhuma anotação salva.</div>';
-                return;
-            }
+            if (notes.length === 0) { DOM.notesList.innerHTML = '<div class="text-xs text-textMuted text-center mt-2 italic">Nenhuma anotação salva.</div>'; return; }
             notes.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(note => {
                 const date = new Date(note.timestamp).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
-                const div = document.createElement('div');
-                div.className = "bg-bgMain p-2 rounded border border-border relative group";
-
-                const p = document.createElement('p');
-                p.className = "text-sm text-textMain pr-6 break-words";
-                p.textContent = note.text;
-
-                const span = document.createElement('span');
-                span.className = "text-[10px] text-textMuted mt-1 block";
-                span.textContent = date;
-
-                const btn = document.createElement('button');
-                btn.className = "absolute top-2 right-2 text-textMuted hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity";
-                btn.dataset.noteId = note.id;
-                btn.setAttribute('aria-label', 'Excluir nota');
-                btn.innerHTML = '<i class="fa-solid fa-trash text-xs"></i>';
-
-                div.appendChild(p);
-                div.appendChild(span);
-                div.appendChild(btn);
-                DOM.notesList.appendChild(div);
+                const div = document.createElement('div'); div.className = "bg-bgMain p-2 rounded border border-border relative group";
+                const p = document.createElement('p'); p.className = "text-sm text-textMain pr-6 break-words"; p.textContent = note.text;
+                const span = document.createElement('span'); span.className = "text-[10px] text-textMuted mt-1 block"; span.textContent = date;
+                const btn = document.createElement('button'); btn.className = "absolute top-2 right-2 text-textMuted hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"; btn.dataset.noteId = note.id; btn.innerHTML = '<i class="fa-solid fa-trash text-xs"></i>';
+                div.appendChild(p); div.appendChild(span); div.appendChild(btn); DOM.notesList.appendChild(div);
             });
         };
-
-        DOM.notesList.addEventListener('click', (e) => {
-            const btn = e.target.closest('[data-note-id]');
-            if (btn) deleteNoteFromDB(Number(btn.dataset.noteId));
-        });
-
-        DOM.btnAddNote.addEventListener('click', () => {
-            const text = DOM.noteInput.value.trim();
-            if (text) {
-                addNoteToDB(text);
-                DOM.noteInput.value = '';
-                DOM.noteInput.classList.add('note-saved');
-                DOM.noteInput.addEventListener('animationend', () => DOM.noteInput.classList.remove('note-saved'), { once: true });
-            }
-        });
-
-        DOM.noteInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') DOM.btnAddNote.click();
-        });
-
-        DOM.btnExportNotes.addEventListener('click', () => {
-            const transaction = db.transaction(['notes'], 'readonly');
-            const request = transaction.objectStore('notes').getAll();
-            request.onsuccess = () => {
-                const notes = request.result;
-                if (notes.length === 0) return showToast("Nenhuma nota para exportar.", "warn");
-
-                let content = "=== MINHAS NOTAS | WORKSPACE 360 ===\n\n";
-                notes.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)).forEach(n => {
-                    content += `[${new Date(n.timestamp).toLocaleString('pt-BR')}]\n${n.text}\n\n`;
-                });
-                const blob = new Blob([content], { type: 'text/plain' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url; a.download = `Notas_Workspace_${Date.now()}.txt`;
-                a.click();
-                URL.revokeObjectURL(url);
-            };
-        });
-
+        DOM.notesList.addEventListener('click', (e) => { const btn = e.target.closest('[data-note-id]'); if (btn) deleteNoteFromDB(Number(btn.dataset.noteId)); });
+        DOM.btnAddNote.addEventListener('click', () => { const text = DOM.noteInput.value.trim(); if (text) { addNoteToDB(text); DOM.noteInput.value = ''; DOM.noteInput.classList.add('note-saved'); DOM.noteInput.addEventListener('animationend', () => DOM.noteInput.classList.remove('note-saved'), { once: true }); } });
+        DOM.noteInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') DOM.btnAddNote.click(); });
         initDB();
 
-        // ==========================================
-        // 4. MOTOR PDF.JS COM CAMADA DE TEXTO
-        // ==========================================
         DOM.fileUpload.addEventListener('change', handleFiles);
-
         const dropZone = DOM.fileUpload.parentElement;
         dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-accent', 'bg-bgHover'); });
         dropZone.addEventListener('dragleave', (e) => { e.preventDefault(); dropZone.classList.remove('border-accent', 'bg-bgHover'); });
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('border-accent', 'bg-bgHover');
-            if (e.dataTransfer.files.length) {
-                DOM.fileUpload.files = e.dataTransfer.files;
-                handleFiles({ target: DOM.fileUpload });
-            }
-        });
+        dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('border-accent', 'bg-bgHover'); if (e.dataTransfer.files.length) { DOM.fileUpload.files = e.dataTransfer.files; handleFiles({ target: DOM.fileUpload }); } });
 
         async function handleFiles(e) {
             const newFiles = Array.from(e.target.files).filter(f => f.type === 'application/pdf');
             if (newFiles.length === 0) return;
-
             let addedCount = 0;
-            let duplicateCount = 0;
-
             for (let file of newFiles) {
                 const isDuplicate = state.files.some(f => f.name === file.name && f.size === file.size);
-                if (isDuplicate) { duplicateCount++; continue; }
-
+                if (isDuplicate) continue;
                 const id = 'pdf_' + Date.now() + Math.random().toString(36).substr(2, 9);
-                const blobUrl = URL.createObjectURL(file);
-                state.files.push({ id, name: file.name, size: file.size, blobUrl, pdfDoc: null, extractedText: null });
+                state.files.push({ id, name: file.name, size: file.size, blobUrl: URL.createObjectURL(file), pdfDoc: null, extractedText: null });
                 addedCount++;
             }
-
-            if (duplicateCount > 0) showToast(`${duplicateCount} arquivo(s) ignorado(s): já estão na lista.`, 'warn');
-            if (addedCount > 0) {
-                renderFileList();
-                if (state.files.length === addedCount) loadAndRenderPDF(state.files[0].id);
-            }
-
+            if (addedCount > 0) { renderFileList(); if (state.files.length === addedCount) loadAndRenderPDF(state.files[0].id); }
             e.target.value = '';
         }
 
         function removeFile(id) {
             const idx = state.files.findIndex(f => f.id === id);
             if (idx === -1) return;
-            
-            URL.revokeObjectURL(state.files[idx].blobUrl);
-            state.files.splice(idx, 1);
-
+            URL.revokeObjectURL(state.files[idx].blobUrl); state.files.splice(idx, 1);
             if (state.activeFileId === id) {
-                state.activeFileId = null;
-                DOM.currentFileName.textContent = 'Nenhum arquivo selecionado';
-                DOM.pdfRenderArea.innerHTML = '';
-                DOM.pdfEmptyState.style.display = 'flex';
-                DOM.btnZoomIn.disabled = true;
-                DOM.btnZoomOut.disabled = true;
-                DOM.btnSummarizePages.classList.add('hidden');
-                DOM.btnSummarizePages.classList.remove('flex');
+                state.activeFileId = null; DOM.currentFileName.textContent = 'Nenhum arquivo selecionado'; DOM.pdfRenderArea.innerHTML = ''; DOM.pdfEmptyState.style.display = 'flex';
+                DOM.btnZoomIn.disabled = true; DOM.btnZoomOut.disabled = true; DOM.btnSummarizePages.classList.add('hidden'); DOM.btnSummarizePages.classList.remove('flex');
                 if (state.files.length > 0) loadAndRenderPDF(state.files[0].id);
             }
             renderFileList();
         }
 
         function renderFileList() {
-            DOM.emptyFileMsg.style.display = state.files.length ? 'none' : 'block';
-            DOM.fileList.innerHTML = '';
+            DOM.emptyFileMsg.style.display = state.files.length ? 'none' : 'block'; DOM.fileList.innerHTML = '';
             state.files.forEach(f => {
-                const div = document.createElement('div');
-                const isActive = f.id === state.activeFileId;
-                div.className = `p-2 mb-2 rounded text-sm transition-colors flex items-center gap-2 border cursor-pointer ${isActive ? 'bg-bgHover border-accent text-accent font-semibold' : 'bg-bgMain border-border hover:border-accent hover:bg-bgHover'}`;
-
-                const icon = document.createElement('i');
-                icon.className = 'fa-regular fa-file-pdf flex-shrink-0';
-
-                const nameSpan = document.createElement('span');
-                nameSpan.className = 'truncate flex-1';
-                nameSpan.textContent = f.name;
-
-                const removeBtn = document.createElement('button');
-                removeBtn.className = 'ml-auto text-textMuted hover:text-red-500 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity';
-                removeBtn.setAttribute('aria-label', `Remover ${f.name}`);
-                removeBtn.innerHTML = '<i class="fa-solid fa-xmark text-xs"></i>';
+                const div = document.createElement('div'); const isActive = f.id === state.activeFileId;
+                div.className = `p-2 mb-2 rounded text-sm transition-colors flex items-center gap-2 border cursor-pointer ${isActive ? 'bg-bgHover border-accent text-accent font-semibold' : 'bg-bgMain border-border hover:border-accent hover:bg-bgHover'} group`;
+                div.innerHTML = `<i class="fa-regular fa-file-pdf flex-shrink-0"></i><span class="truncate flex-1">${f.name}</span>`;
+                const removeBtn = document.createElement('button'); removeBtn.className = 'ml-auto text-textMuted hover:text-red-500 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity'; removeBtn.innerHTML = '<i class="fa-solid fa-xmark text-xs"></i>';
                 removeBtn.addEventListener('click', (e) => { e.stopPropagation(); removeFile(f.id); });
-
-                div.classList.add('group');
-                div.appendChild(icon);
-                div.appendChild(nameSpan);
-                div.appendChild(removeBtn);
-                div.addEventListener('click', () => loadAndRenderPDF(f.id));
-                DOM.fileList.appendChild(div);
+                div.appendChild(removeBtn); div.addEventListener('click', () => loadAndRenderPDF(f.id)); DOM.fileList.appendChild(div);
             });
         }
 
         async function loadAndRenderPDF(id) {
-            const fileObj = state.files.find(f => f.id === id);
-            if (!fileObj) return;
-
-            state.activeFileId = id;
-            DOM.currentFileName.textContent = fileObj.name;
-            renderFileList();
-
-            DOM.pdfEmptyState.style.display = 'none';
-            DOM.pdfRenderArea.innerHTML = '<div class="loader mt-10"></div>';
-            DOM.btnZoomIn.disabled = false;
-            DOM.btnZoomOut.disabled = false;
-            DOM.btnSummarizePages.classList.remove('hidden');
-            DOM.btnSummarizePages.classList.add('flex');
-
+            const fileObj = state.files.find(f => f.id === id); if (!fileObj) return;
+            state.activeFileId = id; DOM.currentFileName.textContent = fileObj.name; renderFileList();
+            DOM.pdfEmptyState.style.display = 'none'; DOM.pdfRenderArea.innerHTML = '<div class="loader mt-10"></div>';
+            DOM.btnZoomIn.disabled = false; DOM.btnZoomOut.disabled = false; DOM.btnSummarizePages.classList.remove('hidden'); DOM.btnSummarizePages.classList.add('flex');
             try {
-                if (!fileObj.pdfDoc) {
-                    const loadingTask = pdfjsLib.getDocument(fileObj.blobUrl);
-                    fileObj.pdfDoc = await loadingTask.promise;
-                    extractTextFromPDF(fileObj);
-                }
+                if (!fileObj.pdfDoc) { const loadingTask = pdfjsLib.getDocument(fileObj.blobUrl); fileObj.pdfDoc = await loadingTask.promise; extractTextFromPDF(fileObj); }
                 await renderAllPages(fileObj.pdfDoc);
-                applyHighlightsToPDF();
-            } catch (error) {
-                console.error("Erro ao carregar PDF:", error);
-                DOM.pdfRenderArea.innerHTML = '<div class="text-red-500 mt-10 text-center p-4">Erro ao renderizar o documento. O PDF pode estar corrompido ou protegido.</div>';
-            }
+            } catch (error) { DOM.pdfRenderArea.innerHTML = '<div class="text-red-500 mt-10 text-center p-4">Erro ao renderizar.</div>'; }
         }
 
         async function renderAllPages(pdfDoc) {
             DOM.pdfRenderArea.innerHTML = '';
             for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
-                const page = await pdfDoc.getPage(pageNum);
-                const viewport = page.getViewport({ scale: state.zoom * 1.2 });
-
-                const pageWrapper = document.createElement('div');
-                pageWrapper.className = 'pdf-page-wrapper';
-                pageWrapper.id = `pdf-wrapper-page-${pageNum}`;
-                pageWrapper.style.width = `${viewport.width}px`;
-                pageWrapper.style.height = `${viewport.height}px`;
-
-                const canvas = document.createElement('canvas');
-                canvas.className = 'absolute top-0 left-0';
-                const context = canvas.getContext('2d', { willReadFrequently: true });
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-                pageWrapper.appendChild(canvas);
-                DOM.pdfRenderArea.appendChild(pageWrapper);
-
+                const page = await pdfDoc.getPage(pageNum); const viewport = page.getViewport({ scale: state.zoom * 1.2 });
+                const pageWrapper = document.createElement('div'); pageWrapper.className = 'pdf-page-wrapper'; pageWrapper.id = `pdf-wrapper-page-${pageNum}`;
+                pageWrapper.style.width = `${viewport.width}px`; pageWrapper.style.height = `${viewport.height}px`;
+                const canvas = document.createElement('canvas'); canvas.className = 'absolute top-0 left-0';
+                const context = canvas.getContext('2d', { willReadFrequently: true }); canvas.height = viewport.height; canvas.width = viewport.width;
+                pageWrapper.appendChild(canvas); DOM.pdfRenderArea.appendChild(pageWrapper);
                 await page.render({ canvasContext: context, viewport }).promise;
-
-                const textLayerDiv = document.createElement('div');
-                textLayerDiv.className = 'textLayer absolute top-0 left-0 w-full h-full';
-                textLayerDiv.style.setProperty('--scale-factor', viewport.scale);
+                const textLayerDiv = document.createElement('div'); textLayerDiv.className = 'textLayer absolute top-0 left-0 w-full h-full'; textLayerDiv.style.setProperty('--scale-factor', viewport.scale);
                 pageWrapper.appendChild(textLayerDiv);
-
                 const textContent = await page.getTextContent();
-                await pdfjsLib.renderTextLayer({
-                    textContentSource: textContent,
-                    container: textLayerDiv,
-                    viewport,
-                    textDivs: []
-                }).promise;
+                await pdfjsLib.renderTextLayer({ textContentSource: textContent, container: textLayerDiv, viewport, textDivs: [] }).promise;
             }
         }
 
-        DOM.btnZoomIn.onclick = () => { state.zoom += 0.2; updateZoom(); };
-        DOM.btnZoomOut.onclick = () => { state.zoom = Math.max(0.4, state.zoom - 0.2); updateZoom(); };
-
-        function updateZoom() {
-            DOM.zoomLevel.textContent = `${Math.round(state.zoom * 100)}%`;
-            if (state.activeFileId) loadAndRenderPDF(state.activeFileId);
-        }
+        DOM.btnZoomIn.onclick = () => { state.zoom += 0.2; updateZoom(); }; DOM.btnZoomOut.onclick = () => { state.zoom = Math.max(0.4, state.zoom - 0.2); updateZoom(); };
+        function updateZoom() { DOM.zoomLevel.textContent = `${Math.round(state.zoom * 100)}%`; if (state.activeFileId) loadAndRenderPDF(state.activeFileId); }
 
         async function extractTextFromPDF(fileObj) {
             if (fileObj.extractedText) return;
-
-            DOM.extractionLabel.textContent = 'Lendo documento para a IA...';
-            DOM.extractionIndicator.classList.remove('hidden');
-            DOM.extractionIndicator.classList.add('flex');
-
-            let fullText = "";
-            const maxPages = Math.min(fileObj.pdfDoc.numPages, MAX_PAGES_TO_EXTRACT);
-
+            DOM.extractionLabel.textContent = 'Lendo documento para a IA...'; DOM.extractionIndicator.classList.remove('hidden'); DOM.extractionIndicator.classList.add('flex');
+            let fullText = ""; const maxPages = Math.min(fileObj.pdfDoc.numPages, MAX_PAGES_TO_EXTRACT);
             for (let i = 1; i <= maxPages; i++) {
-                try {
-                    const page = await fileObj.pdfDoc.getPage(i);
-                    const textContent = await page.getTextContent();
-                    const pageText = textContent.items.map(item => item.str).join(' ');
-                    fullText += `--- PÁGINA ${i} ---\n${pageText}\n\n`;
-                } catch (e) {
-                    console.warn(`Erro extraindo txt pág ${i}`, e);
-                }
+                try { const page = await fileObj.pdfDoc.getPage(i); const textContent = await page.getTextContent(); fullText += `--- PÁGINA ${i} ---\n${textContent.items.map(item => item.str).join(' ')}\n\n`; } catch (e) { }
             }
-
-            fileObj.extractedText = fullText;
-            DOM.extractionIndicator.classList.add('hidden');
-            DOM.extractionIndicator.classList.remove('flex');
+            fileObj.extractedText = fullText; DOM.extractionIndicator.classList.add('hidden'); DOM.extractionIndicator.classList.remove('flex');
         }
 
         // ==========================================
-        // 5. CÉREBRO MULTI-IA (RAG Simulado)
+        // COMUNICAÇÃO COM A VERCEL E FEEDBACK SUPABASE
         // ==========================================
         async function fetchFromAI(systemPrompt, userText) {
-            const model = state.aiModel;
-            const apiKey = state.apiKey;
-            const maxRetries = 5;
-            const delays = [1000, 2000, 4000, 8000, 16000];
-
-            for (let attempt = 0; attempt <= maxRetries; attempt++) {
-                try {
-                    if (model === 'gemini') {
-                        const body = {
-                            contents: [{ parts: [{ text: userText }] }],
-                            generationConfig: { temperature: 0.1 }
-                        };
-                        if (systemPrompt) body.systemInstruction = { parts: [{ text: systemPrompt }] };
-
-                        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(body)
-                        });
-                        const text = await res.text();
-                        let data;
-                        try { data = JSON.parse(text); } catch (e) { throw new Error(`Serviço temporariamente indisponível (Status ${res.status}).`); }
-                        if (data.error) throw new Error(data.error.message);
-                        return data.candidates[0].content.parts[0].text;
-
-                    } else {
-                        const url = model === 'groq'
-                            ? 'https://api.groq.com/openai/v1/chat/completions'
-                            : 'https://api.moonshot.cn/v1/chat/completions';
-                        const targetModel = model === 'groq' ? 'llama-3.3-70b-versatile' : 'moonshot-v1-8k';
-
-                        const messages = [];
-                        if (systemPrompt) messages.push({ role: "system", content: systemPrompt });
-                        messages.push({ role: "user", content: userText });
-
-                        const res = await fetch(url, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                            body: JSON.stringify({ model: targetModel, messages, temperature: 0.1 })
-                        });
-                        const text = await res.text();
-                        let data;
-                        try { data = JSON.parse(text); } catch (e) { throw new Error(`Serviço sobrecarregado no momento (Status ${res.status}).`); }
-                        if (data.error) {
-                            const errMsg = data.error.message || data.error.type || JSON.stringify(data.error);
-                            throw new Error(`API ${model.toUpperCase()}: ${errMsg}`);
-                        }
-                        return data.choices[0].message.content;
-                    }
-                } catch (error) {
-                    if (attempt < maxRetries) {
-                        await new Promise(resolve => setTimeout(resolve, delays[attempt]));
-                    } else {
-                        throw new Error(`Falha de comunicação persistente com a IA. Detalhe: ${error.message}`);
-                    }
-                }
-            }
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pergunta: userText || "Responda.", textoPDF: systemPrompt || "" })
+                });
+                const data = await res.json();
+                if (data.erro) throw new Error(data.erro);
+                return data.respostaIA;
+            } catch (error) { throw new Error(`Servidor: ${error.message}`); }
         }
 
-        function appendChatMessage(role, text) {
+        function appendChatMessage(role, text, originalQuestion = "") {
             const div = document.createElement('div');
             const isUser = role === 'user';
-            div.className = `p-2 rounded-lg border border-border max-w-[85%] text-sm ${
-                isUser ? 'bg-accent text-white self-end border-accent' : 'bg-bgPanel text-textMain self-start'
+            div.className = `p-3 rounded-lg border border-border max-w-[85%] text-sm ${
+                isUser ? 'bg-accent text-white self-end border-accent' : 'bg-bgPanel text-textMain self-start shadow-sm'
             }`;
 
             const formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-            div.innerHTML = DOMPurify.sanitize(formattedText);
+            
+            if (isUser) {
+                div.innerHTML = DOMPurify.sanitize(formattedText);
+            } else {
+                // AQUI ESTÃO OS BOTÕES DE FEEDBACK!
+                div.innerHTML = `
+                    <div class="ai-formatted-content">${DOMPurify.sanitize(formattedText)}</div>
+                    <div class="flex justify-end gap-2 mt-3 border-t border-border pt-2">
+                        <span class="text-[10px] text-textMuted mr-auto self-center"><i class="fa-solid fa-graduation-cap"></i> A resposta foi útil?</span>
+                        <button class="feedback-btn text-textMuted hover:text-green-500 transition-colors" data-type="up" title="Resposta perfeita!"><i class="fa-solid fa-thumbs-up"></i></button>
+                        <button class="feedback-btn text-textMuted hover:text-red-500 transition-colors" data-type="down" title="Resposta errada. Ensinar a IA."><i class="fa-solid fa-thumbs-down"></i></button>
+                    </div>
+                `;
+
+                div.querySelectorAll('.feedback-btn').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const type = btn.dataset.type;
+                        if (type === 'up') {
+                            showToast("Bom saber! Obrigado.", "success");
+                            btn.classList.replace('text-textMuted', 'text-green-500');
+                            btn.parentElement.querySelectorAll('button').forEach(b => b.disabled = true);
+                        } else {
+                            const ideal = prompt("Como a IA deveria ter respondido? (Isso será salvo na base de conhecimento)");
+                            if (ideal && ideal.trim() !== "") {
+                                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+                                btn.disabled = true;
+                                try {
+                                    const res = await fetch('/api/chat', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ tipo: 'feedback', pergunta: originalQuestion, respostaIA: text, respostaIdeal: ideal })
+                                    });
+                                    if(res.ok) {
+                                        showToast("Sua correção foi salva na nuvem com sucesso!", "success");
+                                        btn.innerHTML = '<i class="fa-solid fa-check text-green-500"></i>';
+                                        btn.parentElement.querySelectorAll('button').forEach(b => b.disabled = true);
+                                    } else throw new Error("Erro no servidor.");
+                                } catch (err) {
+                                    showToast("Falha ao salvar a correção na nuvem.", "error");
+                                    btn.innerHTML = '<i class="fa-solid fa-thumbs-down"></i>';
+                                    btn.disabled = false;
+                                }
+                            }
+                        }
+                    });
+                });
+            }
 
             DOM.chatMessages.appendChild(div);
             DOM.chatMessages.scrollTop = DOM.chatMessages.scrollHeight;
@@ -1037,264 +463,71 @@
 
         async function gatherAllFilesText() {
             let fullText = "";
-            DOM.extractionLabel.textContent = 'A analisar múltiplos documentos...';
-            DOM.extractionIndicator.classList.remove('hidden');
-            DOM.extractionIndicator.classList.add('flex');
-
+            DOM.extractionLabel.textContent = 'A analisar múltiplos documentos...'; DOM.extractionIndicator.classList.remove('hidden'); DOM.extractionIndicator.classList.add('flex');
             for (let i = 0; i < state.files.length; i++) {
-                let file = state.files[i];
-                DOM.extractionLabel.textContent = `A processar documento ${i + 1} de ${state.files.length}...`;
-
-                if (!file.pdfDoc) {
-                    try { file.pdfDoc = await pdfjsLib.getDocument(file.blobUrl).promise; } catch (e) { continue; }
-                }
+                let file = state.files[i]; DOM.extractionLabel.textContent = `A processar documento ${i + 1} de ${state.files.length}...`;
+                if (!file.pdfDoc) { try { file.pdfDoc = await pdfjsLib.getDocument(file.blobUrl).promise; } catch (e) { continue; } }
                 if (!file.extractedText) await extractTextFromPDF(file);
-
                 fullText += `\n\n--- INÍCIO DO DOCUMENTO: ${file.name} ---\n${file.extractedText}\n--- FIM DO DOCUMENTO: ${file.name} ---\n`;
             }
-
-            DOM.extractionIndicator.classList.add('hidden');
-            DOM.extractionIndicator.classList.remove('flex');
-            DOM.extractionLabel.textContent = 'Lendo documento para a IA...';
-            return fullText;
+            DOM.extractionIndicator.classList.add('hidden'); DOM.extractionIndicator.classList.remove('flex'); DOM.extractionLabel.textContent = 'Lendo documento para a IA...'; return fullText;
         }
 
         async function askAI() {
             const question = DOM.chatInput.value.trim();
             if (!question) return;
 
-            if (!state.apiKey) {
-                showToast("Insira sua API Key nas Configurações.", "warn");
-                DOM.settingsPanel.classList.remove('hidden');
-                return;
-            }
-
             appendChatMessage('user', question);
             state.chatHistory.push({ role: 'user', content: question });
-            DOM.chatInput.value = '';
-            DOM.btnSendChat.disabled = true;
-            DOM.btnSendChat.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            DOM.chatInput.value = ''; DOM.btnSendChat.disabled = true; DOM.btnSendChat.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
-            const maxChars = getMaxChars();
             let docText = "";
-
             if (DOM.toggleMultiDoc.checked) {
-                if (state.files.length === 0) {
-                    appendChatMessage('ai', "⚠️ Nenhum arquivo carregado para análise conjunta.");
-                    DOM.btnSendChat.disabled = false;
-                    DOM.btnSendChat.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
-                    return;
-                }
-                const allText = await gatherAllFilesText();
-                docText = allText.substring(0, maxChars);
-                if (allText.length > maxChars) {
-                    appendChatMessage('ai', `⚠️ <i>Aviso: Limite de IA alcançado. Analisando apenas a primeira parte dos documentos combinados.</i>`);
-                }
+                if (state.files.length === 0) { appendChatMessage('ai', "⚠️ Nenhum arquivo carregado."); DOM.btnSendChat.disabled = false; DOM.btnSendChat.innerHTML = '<i class="fa-solid fa-paper-plane"></i>'; return; }
+                docText = (await gatherAllFilesText()).substring(0, getMaxChars());
             } else {
                 const activeFile = state.files.find(f => f.id === state.activeFileId);
-                if (!activeFile || !activeFile.extractedText) {
-                    appendChatMessage('ai', "⚠️ Aguarde a extração do texto ou abra um PDF primeiro.");
-                    DOM.btnSendChat.disabled = false;
-                    DOM.btnSendChat.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
-                    return;
-                }
-                docText = activeFile.extractedText.substring(0, maxChars);
-                if (activeFile.extractedText.length > maxChars) {
-                    appendChatMessage('ai', `⚠️ <i>Aviso: Limite de IA atingido. Li as primeiras ~${Math.round(maxChars / 4000)}k palavras do documento.</i>`);
-                }
+                if (!activeFile || !activeFile.extractedText) { appendChatMessage('ai', "⚠️ Aguarde a extração do texto."); DOM.btnSendChat.disabled = false; DOM.btnSendChat.innerHTML = '<i class="fa-solid fa-paper-plane"></i>'; return; }
+                docText = activeFile.extractedText.substring(0, getMaxChars());
             }
 
             const historyContext = state.chatHistory.slice(-6).map(m => `[${m.role === 'user' ? 'Usuário' : 'IA'}]: ${m.content}`).join('\n');
-
-            const systemPrompt = `Você é um assistente técnico especialista analisando documentação.
-REGRA 1: Responda APENAS com base no documento fornecido. Se a informação não estiver no texto, diga "O documento não informa sobre isso."
-REGRA 2: Seja direto e cite a página, se possível.
-REGRA 3: Responda em Português.
-REGRA 4: Considere o histórico de conversa abaixo para dar respostas contextuais.
-
-HISTÓRICO RECENTE:
-${historyContext}
-
-TEXTO DO(S) DOCUMENTO(S):
-${docText}`;
+            const systemPrompt = `Você é um assistente técnico especialista. Responda APENAS com base no documento.\n\nHISTÓRICO RECENTE:\n${historyContext}\n\nDOCUMENTOS:\n${docText}`;
 
             try {
                 const answer = await fetchFromAI(systemPrompt, question);
-                appendChatMessage('ai', answer);
+                appendChatMessage('ai', answer, question); // Passa a pergunta para o botão 👍/👎
                 state.chatHistory.push({ role: 'ai', content: answer });
             } catch (error) {
                 appendChatMessage('ai', `⚠️ Erro: ${error.message}`);
             } finally {
-                DOM.btnSendChat.disabled = false;
-                DOM.btnSendChat.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
+                DOM.btnSendChat.disabled = false; DOM.btnSendChat.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
             }
         }
 
         DOM.btnSendChat.addEventListener('click', askAI);
-        DOM.chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); askAI(); }
-        });
+        DOM.chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); askAI(); } });
 
-        // ==========================================
-        // 5.1 RESUMOS DE PÁGINA
-        // ==========================================
         DOM.btnSummarizePages.addEventListener('click', async () => {
-            if (!state.apiKey) {
-                showToast("Insira sua API Key nas Configurações primeiro.", "warn");
-                DOM.settingsPanel.classList.remove('hidden');
-                return;
-            }
             const activeFile = state.files.find(f => f.id === state.activeFileId);
-            if (!activeFile || !activeFile.extractedText) {
-                showToast("Aguarde a extração de texto do documento atual.", "info");
-                return;
-            }
-
-            DOM.btnSummarizePages.disabled = true;
-            DOM.btnSummarizePages.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processando...';
-
+            if (!activeFile || !activeFile.extractedText) return showToast("Aguarde a extração de texto.", "info");
+            DOM.btnSummarizePages.disabled = true; DOM.btnSummarizePages.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processando...';
             try {
                 document.querySelectorAll('.page-summary-bubble').forEach(b => b.remove());
-
-                const docText = activeFile.extractedText.substring(0, getMaxChars());
-                const prompt = `Faça um resumo ULTRA-CURTO (no máximo 2 frases) contendo a essência de CADA PÁGINA do documento abaixo.
-REGRA CRÍTICA: Retorne sua resposta em formato de lista estrita, sem textos extras, usando este padrão:
-PAGINA_1|resumo aqui...
-PAGINA_2|resumo aqui...
-
-DOCUMENTO:
-${docText}`;
-
-                const answerRaw = await fetchFromAI(null, prompt);
+                const answerRaw = await fetchFromAI(activeFile.extractedText.substring(0, getMaxChars()), `Faça um resumo ULTRA-CURTO (2 frases) da essência de CADA PÁGINA. REGRA: Use formato PAGINA_1|resumo`);
                 answerRaw.split('\n').forEach(line => {
                     const match = line.match(/PAGINA_(\d+)\|(.*)/i);
                     if (match) {
-                        const pageNum = parseInt(match[1]);
-                        const summary = match[2].trim();
-                        const wrapper = document.getElementById(`pdf-wrapper-page-${pageNum}`);
+                        const pageNum = parseInt(match[1]); const wrapper = document.getElementById(`pdf-wrapper-page-${pageNum}`);
                         if (wrapper) {
-                            const bubble = document.createElement('div');
-                            bubble.className = 'page-summary-bubble absolute z-20 bg-bgPanel border border-border border-l-4 border-l-accent p-3 shadow-lg rounded-md text-xs text-textMain transition-opacity opacity-90 hover:opacity-100';
-                            bubble.style.cssText = 'top:1.5rem;right:1.5rem;width:240px;';
-
-                            const title = document.createElement('div');
-                            title.className = 'font-bold text-accent mb-1 flex items-center gap-1';
-                            title.innerHTML = `<i class="fa-regular fa-comment-dots"></i> Resumo (Pág. ${pageNum})`;
-
-                            const content = document.createElement('span');
-                            content.textContent = summary;
-
-                            bubble.appendChild(title);
-                            bubble.appendChild(content);
+                            const bubble = document.createElement('div'); bubble.className = 'page-summary-bubble absolute z-20 bg-bgPanel border border-border border-l-4 border-l-accent p-3 shadow-lg rounded-md text-xs text-textMain transition-opacity opacity-90 hover:opacity-100'; bubble.style.cssText = 'top:1.5rem;right:1.5rem;width:240px;';
+                            bubble.innerHTML = `<div class="font-bold text-accent mb-1 flex items-center gap-1"><i class="fa-regular fa-comment-dots"></i> Resumo (Pág. ${pageNum})</div><span>${match[2].trim()}</span>`;
                             wrapper.appendChild(bubble);
                         }
                     }
                 });
-                showToast("Resumos por página gerados!", "success");
-            } catch (error) {
-                showToast("Erro ao gerar resumos: " + error.message, "error", 5000);
-            } finally {
-                DOM.btnSummarizePages.disabled = false;
-                DOM.btnSummarizePages.innerHTML = '<i class="fa-solid fa-file-waveform"></i> <span class="hidden xl:inline">Resumir Páginas</span>';
-            }
-        });
-
-        // ==========================================
-        // 6. ANÁLISE GERAL (GRIFOS)
-        // ==========================================
-        function escapeRegExp(string) {
-            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        }
-
-        function applyHighlightsToPDF() {
-            document.querySelectorAll('.textLayer mark').forEach(mark => {
-                const parent = mark.parentNode;
-                parent.replaceChild(document.createTextNode(mark.textContent), mark);
-                parent.normalize();
-            });
-
-            const termsToHighlight = [];
-            document.querySelectorAll('#analysisResults .highlight-yellow').forEach(el => termsToHighlight.push({ text: el.textContent.trim(), color: 'pdf-highlight-yellow' }));
-            document.querySelectorAll('#analysisResults .highlight-blue').forEach(el => termsToHighlight.push({ text: el.textContent.trim(), color: 'pdf-highlight-blue' }));
-            document.querySelectorAll('#analysisResults .highlight-green').forEach(el => termsToHighlight.push({ text: el.textContent.trim(), color: 'pdf-highlight-green' }));
-
-            if (termsToHighlight.length === 0) return;
-
-            document.querySelectorAll('.textLayer span').forEach(span => {
-                let html = span.textContent;
-                let modified = false;
-                termsToHighlight.forEach(termObj => {
-                    if (termObj.text.length < 4) return;
-                    const regex = new RegExp(`(${escapeRegExp(termObj.text)})`, 'gi');
-                    if (regex.test(html)) {
-                        html = html.replace(regex, `<mark class="${termObj.color}">$1</mark>`);
-                        modified = true;
-                    }
-                });
-                if (modified) span.innerHTML = html;
-            });
-        }
-
-        DOM.btnRunAnalysis.addEventListener('click', async () => {
-            if (state.files.length === 0) return showToast("Faça upload de pelo menos um PDF.", "warn");
-            if (!state.apiKey) {
-                showToast("Insira sua API Key nas Configurações.", "warn");
-                DOM.settingsPanel.classList.remove('hidden');
-                return;
-            }
-
-            DOM.btnRunAnalysis.disabled = true;
-            DOM.btnRunAnalysis.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analisando Múltiplos Arquivos...';
-
-            try {
-                const allText = await gatherAllFilesText();
-                const maxChars = getMaxChars();
-                const truncatedText = allText.substring(0, maxChars);
-                let warningMsg = "";
-
-                if (allText.length > maxChars) {
-                    warningMsg = `<div class="mb-4 p-3 bg-yellow-100/10 border border-yellow-500/50 text-yellow-600 text-xs rounded">
-                        <i class="fa-solid fa-triangle-exclamation"></i> <b>Limite de API:</b> A análise foi limitada ao começo dos documentos para não ultrapassar o limite gratuito do ${state.aiModel.toUpperCase()}.
-                    </div>`;
-                }
-
-                const prompt = `Você é um analista rigoroso avaliando múltiplos editais. Analise TODOS os documentos fornecidos e consolide-os nestas três categorias exatas.
-
-REGRAS DE MARCAÇÃO (OBRIGATÓRIO E CRÍTICO PARA O SISTEMA DE GRIFO AUTOMÁTICO DO PDF):
-1. Responda em HTML, usando as tags <h3> para o nome das seções e <ul>/<li> para os itens.
-2. Não use crases de markdown.
-3. Você DEVE destacar a informação vital dentro do texto usando as tags CSS apropriadas.
-4. O texto destacado DEVE SER UMA CÓPIA EXATA (TRECHO LITERAL E CURTO) DO DOCUMENTO ORIGINAL. Não resuma dentro da tag de highlight, apenas copie o nome, número ou data como está escrito no documento.
-
-- Tópicos de Atenção: Use <span class="highlight-yellow">...</span> para destacar multas, obrigações severas, prazos finais e dados cruciais.
-- Documentação Exigida: Use <span class="highlight-blue">...</span> para grifar NOME EXATO E LITERAL DE CADA CERTIDÃO/ANEXO exigido.
-- Contatos Úteis: Use <span class="highlight-green">...</span> para grifar TELEFONES, E-MAILS EXATOS ou nomes de pessoas.
-
-SEÇÕES OBRIGATÓRIAS:
-<h3>Tópicos de Atenção</h3>
-<h3>Documentação Exigida</h3>
-<h3>Contatos Úteis</h3>
-
-TEXTO CONSOLIDADO:
-${truncatedText}`;
-
-                const answerRaw = await fetchFromAI(null, prompt);
-                let answerHTML = answerRaw.replace(/```html/g, '').replace(/```/g, '');
-
-                DOM.analysisResults.innerHTML = warningMsg + DOMPurify.sanitize(answerHTML, {
-                    ALLOWED_TAGS: ['h3', 'ul', 'li', 'span', 'b', 'strong', 'i', 'em', 'br', 'div', 'p'],
-                    ALLOWED_ATTR: ['class']
-                });
-
-                applyHighlightsToPDF();
-                showToast("Análise concluída com sucesso!", "success");
-
-            } catch (error) {
-                DOM.analysisResults.innerHTML = `<div class="text-red-500 p-3 bg-red-100 rounded border border-red-300">⚠️ Erro: ${error.message}</div>`;
-            } finally {
-                DOM.btnRunAnalysis.disabled = false;
-                DOM.btnRunAnalysis.innerHTML = '<i class="fa-solid fa-microchip"></i> Reprocessar Todos os Arquivos';
-            }
+                showToast("Resumos gerados!", "success");
+            } catch (error) { showToast("Erro: " + error.message, "error"); } finally { DOM.btnSummarizePages.disabled = false; DOM.btnSummarizePages.innerHTML = '<i class="fa-solid fa-file-waveform"></i> <span class="hidden xl:inline">Resumir Páginas</span>'; }
         });
 
     </script>
