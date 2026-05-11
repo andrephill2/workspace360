@@ -31,18 +31,17 @@ export default async function handler(req, res) {
       if (!response.ok) throw new Error('Erro ao salvar no Supabase');
       return res.status(200).json({ sucesso: true });
     } catch (error) {
-      return res.status(500).json({ erro: 'Falha ao salvar feedback' });
+      return res.status(500).json({ erro: `Supabase Erro: ${error.message}` });
     }
   }
 
   // 2. SE FOR UMA PERGUNTA NORMAL PARA A IA
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return res.status(500).json({ erro: 'Chave do Gemini não configurada' });
+  if (!apiKey) return res.status(500).json({ erro: 'Chave do Gemini (GEMINI_API_KEY) está vazia na Vercel!' });
 
   const promptCompleto = `Contexto do PDF:\n${body.textoPDF}\n\nResponda: ${body.pergunta}`;
 
   try {
-    // Usando o modelo correto: gemini-1.5-flash
     const resposta = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -52,11 +51,28 @@ export default async function handler(req, res) {
       })
     });
 
-    const dados = await resposta.json();
-    if (dados.error) throw new Error(dados.error.message);
+    // Pega a resposta do Google em formato de texto bruto primeiro
+    const textResponse = await resposta.text(); 
+    
+    let dados;
+    try {
+        dados = JSON.parse(textResponse);
+    } catch(e) {
+        return res.status(500).json({ erro: `Google retornou um formato inválido: ${textResponse.substring(0, 100)}` });
+    }
+
+    // AQUI ESTÁ A MÁGICA: Se o Google der erro, ele vai cuspir o motivo EXATO!
+    if (dados.error) {
+         return res.status(500).json({ erro: `RECUSADO PELO GOOGLE: ${dados.error.message}` });
+    }
+
+    if (!dados.candidates || dados.candidates.length === 0) {
+         return res.status(500).json({ erro: `Google não enviou resposta. O que chegou: ${JSON.stringify(dados).substring(0, 150)}` });
+    }
     
     return res.status(200).json({ respostaIA: dados.candidates[0].content.parts[0].text });
+    
   } catch (error) {
-    return res.status(500).json({ erro: 'Falha ao conectar com a IA' });
+    return res.status(500).json({ erro: `FALHA NA REQUISIÇÃO (Cabo solto): ${error.message}` });
   }
 }
