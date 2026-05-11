@@ -413,7 +413,6 @@
             if (isUser) {
                 div.innerHTML = DOMPurify.sanitize(formattedText);
             } else {
-                // AQUI ESTÃO OS BOTÕES DE FEEDBACK!
                 div.innerHTML = `
                     <div class="ai-formatted-content">${DOMPurify.sanitize(formattedText)}</div>
                     <div class="flex justify-end gap-2 mt-3 border-t border-border pt-2">
@@ -496,7 +495,7 @@
 
             try {
                 const answer = await fetchFromAI(systemPrompt, question);
-                appendChatMessage('ai', answer, question); // Passa a pergunta para o botão 👍/👎
+                appendChatMessage('ai', answer, question);
                 state.chatHistory.push({ role: 'ai', content: answer });
             } catch (error) {
                 appendChatMessage('ai', `⚠️ Erro: ${error.message}`);
