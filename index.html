@@ -4,35 +4,78 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Workspace 360º - Análise de PDFs com IA</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+
     <script>
         tailwind.config = {
-            darkMode: 'class', theme: { extend: { colors: { bgMain: 'var(--bg-main)', bgPanel: 'var(--bg-panel)', bgHover: 'var(--bg-hover)', textMain: 'var(--text-main)', textMuted: 'var(--text-muted)', accent: 'var(--accent)', accentHover: 'var(--accent-hover)', border: 'var(--border-color)' }, fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], } } }
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        bgMain: 'var(--bg-main)', bgPanel: 'var(--bg-panel)', bgHover: 'var(--bg-hover)',
+                        textMain: 'var(--text-main)', textMuted: 'var(--text-muted)',
+                        accent: 'var(--accent)', accentHover: 'var(--accent-hover)', border: 'var(--border-color)'
+                    },
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], }
+                }
+            }
         }
     </script>
+
     <style>
         :root { --bg-main: #f3f4f6; --bg-panel: #ffffff; --bg-hover: #e5e7eb; --text-main: #1f2937; --text-muted: #6b7280; --accent: #2563eb; --accent-hover: #1d4ed8; --border-color: #d1d5db; }
         [data-theme="noturno"] { --bg-main: #111827; --bg-panel: #1f2937; --bg-hover: #374151; --text-main: #f9fafb; --text-muted: #9ca3af; --accent: #3b82f6; --accent-hover: #60a5fa; --border-color: #374151; }
         [data-theme="dracula"] { --bg-main: #282a36; --bg-panel: #44475a; --bg-hover: #6272a4; --text-main: #f8f8f2; --text-muted: #bd93f9; --accent: #ff79c6; --accent-hover: #ff92df; --border-color: #6272a4; }
-        ::-webkit-scrollbar { width: 8px; height: 8px; } ::-webkit-scrollbar-track { background: var(--bg-main); } ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; } ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
-        .hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-main); }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
         .pdf-page-wrapper { position: relative; margin-bottom: 1rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); background: white; }
-        .textLayer { opacity: 1; z-index: 2; } .textLayer span { color: transparent !important; cursor: text; } .textLayer span::selection { background-color: rgba(37, 99, 235, 0.3) !important; color: transparent !important; } .textLayer span::-moz-selection { background-color: rgba(37, 99, 235, 0.3) !important; color: transparent !important; }
-        .pdf-highlight-yellow { background-color: rgba(253, 224, 71, 0.45); border-radius: 2px; } .pdf-highlight-blue { background-color: rgba(147, 197, 253, 0.45); border-radius: 2px; } .pdf-highlight-green { background-color: rgba(134, 239, 172, 0.45); border-radius: 2px; }
+        .textLayer { opacity: 1; z-index: 2; }
+        .textLayer span { color: transparent !important; cursor: text; }
+        .textLayer span::selection { background-color: rgba(37, 99, 235, 0.3) !important; color: transparent !important; }
+        .textLayer span::-moz-selection { background-color: rgba(37, 99, 235, 0.3) !important; color: transparent !important; }
+        
+        .pdf-highlight-yellow { background-color: rgba(253, 224, 71, 0.45); border-radius: 2px; }
+        .pdf-highlight-blue { background-color: rgba(147, 197, 253, 0.45); border-radius: 2px; }
+        .pdf-highlight-green { background-color: rgba(134, 239, 172, 0.45); border-radius: 2px; }
+
         .loader { border: 3px solid var(--bg-hover); border-top: 3px solid var(--accent); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .highlight-yellow { background-color: rgba(253, 224, 71, 0.8); color: #854d0e; padding: 0.1rem 0.25rem; border-radius: 0.25rem; font-weight: 600; cursor: pointer;} .highlight-blue { background-color: rgba(147, 197, 253, 0.8); color: #1e3a8a; padding: 0.1rem 0.25rem; border-radius: 0.25rem; font-weight: 600; cursor: pointer;} .highlight-green { background-color: rgba(134, 239, 172, 0.8); color: #14532d; padding: 0.1rem 0.25rem; border-radius: 0.25rem; font-weight: 600; cursor: pointer;}
-        [data-theme="noturno"] .highlight-yellow, [data-theme="dracula"] .highlight-yellow { background-color: rgba(253, 224, 71, 0.3); color: #fde047; } [data-theme="noturno"] .highlight-blue, [data-theme="dracula"] .highlight-blue { background-color: rgba(147, 197, 253, 0.3); color: #93c5fd; } [data-theme="noturno"] .highlight-green, [data-theme="dracula"] .highlight-green { background-color: rgba(134, 239, 172, 0.3); color: #86efac; }
-        .ai-formatted-content h3 { font-weight: bold; margin-top: 1rem; margin-bottom: 0.5rem; color: var(--accent); border-bottom: 1px solid var(--border-color); padding-bottom: 0.25rem;} .ai-formatted-content ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 1rem; } .ai-formatted-content li { margin-bottom: 0.5rem; line-height: 1.5;}
+
+        .highlight-yellow { background-color: rgba(253, 224, 71, 0.8); color: #854d0e; padding: 0.1rem 0.25rem; border-radius: 0.25rem; font-weight: 600; cursor: pointer;}
+        .highlight-blue { background-color: rgba(147, 197, 253, 0.8); color: #1e3a8a; padding: 0.1rem 0.25rem; border-radius: 0.25rem; font-weight: 600; cursor: pointer;}
+        .highlight-green { background-color: rgba(134, 239, 172, 0.8); color: #14532d; padding: 0.1rem 0.25rem; border-radius: 0.25rem; font-weight: 600; cursor: pointer;}
+        
+        [data-theme="noturno"] .highlight-yellow, [data-theme="dracula"] .highlight-yellow { background-color: rgba(253, 224, 71, 0.3); color: #fde047; }
+        [data-theme="noturno"] .highlight-blue, [data-theme="dracula"] .highlight-blue { background-color: rgba(147, 197, 253, 0.3); color: #93c5fd; }
+        [data-theme="noturno"] .highlight-green, [data-theme="dracula"] .highlight-green { background-color: rgba(134, 239, 172, 0.3); color: #86efac; }
+        
+        .ai-formatted-content h3 { font-weight: bold; margin-top: 1rem; margin-bottom: 0.5rem; color: var(--accent); border-bottom: 1px solid var(--border-color); padding-bottom: 0.25rem;}
+        .ai-formatted-content ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 1rem; }
+        .ai-formatted-content li { margin-bottom: 0.5rem; line-height: 1.5;}
+
         .transition-width { transition: width 0.3s ease, flex 0.3s ease; }
+
         #toastContainer { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
         .toast { padding: 0.65rem 1rem; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.2); opacity: 0; transform: translateY(8px); transition: opacity 0.25s, transform 0.25s; pointer-events: none; max-width: 280px; }
-        .toast.show { opacity: 1; transform: translateY(0); } .toast-info { background: var(--accent); color: white; } .toast-error { background: #ef4444; color: white; } .toast-success { background: #22c55e; color: white; } .toast-warn { background: #f59e0b; color: white; }
-        @keyframes noteFlash { 0% { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(37,99,235,0.3); } 100% { border-color: var(--border-color); box-shadow: none; } } .note-saved { animation: noteFlash 0.8s ease forwards; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast-info { background: var(--accent); color: white; }
+        .toast-error { background: #ef4444; color: white; }
+        .toast-success { background: #22c55e; color: white; }
+        .toast-warn { background: #f59e0b; color: white; }
+
+        @keyframes noteFlash { 0% { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(37,99,235,0.3); } 100% { border-color: var(--border-color); box-shadow: none; } }
+        .note-saved { animation: noteFlash 0.8s ease forwards; }
     </style>
 </head>
 <body class="h-screen w-screen overflow-hidden bg-bgMain text-textMain flex font-sans transition-colors duration-300">
@@ -48,6 +91,7 @@
                 <i class="fa-solid fa-gear"></i>
             </button>
         </div>
+
         <div id="settingsPanel" class="hidden p-4 border-b border-border bg-bgMain text-sm flex-shrink-0">
             <div class="mb-3">
                 <label class="block text-xs font-semibold mb-1 text-textMuted">Tema Visual</label>
@@ -63,6 +107,7 @@
                 </span>
             </div>
         </div>
+
         <div class="p-4 border-b border-border flex-shrink-0">
             <label for="fileUpload" class="border-2 border-dashed border-border rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:border-accent hover:bg-bgHover transition-colors group">
                 <i class="fa-solid fa-cloud-arrow-up text-2xl text-textMuted group-hover:text-accent mb-2"></i>
@@ -71,6 +116,7 @@
                 <input type="file" id="fileUpload" accept="application/pdf" class="hidden" multiple>
             </label>
         </div>
+
         <div class="flex-1 overflow-y-auto p-2" id="fileList">
             <div class="text-center text-textMuted text-sm mt-4 italic" id="emptyFileMsg">Nenhum arquivo carregado.</div>
         </div>
@@ -79,19 +125,19 @@
     <main id="mainViewer" class="w-2/4 h-full flex flex-col bg-bgMain relative transition-width flex-shrink-0">
         <div class="h-12 bg-bgPanel border-b border-border flex items-center justify-between px-4 shadow-sm z-10 flex-shrink-0">
             <div class="flex items-center gap-3 overflow-hidden">
-                <button id="btnToggleSidebar" class="text-textMuted hover:text-accent p-1 transition-colors" title="Expandir/Ocultar Menu Lateral" aria-label="Alternar menu lateral">
+                <button id="btnToggleSidebar" class="text-textMuted hover:text-accent p-1 transition-colors" title="Expandir/Ocultar Menu Lateral">
                     <i class="fa-solid fa-bars"></i>
                 </button>
                 <div class="font-semibold text-sm truncate" id="currentFileName">Nenhum arquivo selecionado</div>
             </div>
             <div class="flex items-center gap-4 text-sm flex-shrink-0">
-                <button id="btnSummarizePages" class="hidden items-center gap-1 bg-accent/10 text-accent px-2 py-1 rounded hover:bg-accent hover:text-white transition-colors border border-accent/20" aria-label="Resumir páginas">
+                <button id="btnSummarizePages" class="hidden items-center gap-1 bg-accent/10 text-accent px-2 py-1 rounded hover:bg-accent hover:text-white transition-colors border border-accent/20">
                     <i class="fa-solid fa-file-waveform"></i> <span class="hidden xl:inline">Resumir Páginas</span>
                 </button>
                 <div class="flex items-center gap-2 border-l border-border pl-4">
-                    <button id="btnZoomOut" class="p-1 hover:text-accent disabled:opacity-50" disabled aria-label="Diminuir zoom"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+                    <button id="btnZoomOut" class="p-1 hover:text-accent disabled:opacity-50" disabled><i class="fa-solid fa-magnifying-glass-minus"></i></button>
                     <span id="zoomLevel" class="w-10 text-center">100%</span>
-                    <button id="btnZoomIn" class="p-1 hover:text-accent disabled:opacity-50" disabled aria-label="Aumentar zoom"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+                    <button id="btnZoomIn" class="p-1 hover:text-accent disabled:opacity-50" disabled><i class="fa-solid fa-magnifying-glass-plus"></i></button>
                 </div>
             </div>
         </div>
@@ -105,12 +151,13 @@
         </div>
 
         <div id="extractionIndicator" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-accent text-white px-4 py-2 rounded-full text-xs shadow-lg hidden items-center gap-2 z-50">
-            <div class="loader" style="border-top-color:white;border-left-color:rgba(255,255,255,0.3);border-right-color:rgba(255,255,255,0.3);border-bottom-color:rgba(255,255,255,0.3);width:14px;height:14px;"></div>
+            <div class="loader" style="border-top-color:white;width:14px;height:14px;"></div>
             <span id="extractionLabel">Lendo documento para a IA...</span>
         </div>
     </main>
 
     <aside id="rightSidebar" class="w-1/4 h-full bg-bgPanel border-l border-border flex flex-col z-10 shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.1)] transition-width flex-shrink-0">
+        
         <div class="h-[60%] border-b border-border flex flex-col bg-bgMain">
             <div class="flex border-b border-border bg-bgPanel flex-shrink-0">
                 <button id="tabChat" class="flex-1 p-2.5 text-[13px] font-semibold text-accent border-b-2 border-accent transition-colors flex justify-center items-center gap-1.5">
@@ -126,28 +173,26 @@
             
             <div id="contentChat" class="flex-1 flex flex-col overflow-hidden">
                 <div class="p-2 border-b border-border bg-bgPanel flex justify-between items-center text-xs flex-shrink-0">
-                    <span class="text-textMuted font-semibold" title="Escolha se a IA deve ler apenas o arquivo aberto ou todos os arquivos listados.">
-                        <i class="fa-solid fa-magnifying-glass"></i> Contexto da IA:
-                    </span>
+                    <span class="text-textMuted font-semibold"><i class="fa-solid fa-magnifying-glass"></i> Contexto da IA:</span>
                     <label class="flex items-center cursor-pointer gap-2">
                         <span class="text-textMuted font-medium transition-colors" id="chatScopeLabel">Documento Atual</span>
                         <div class="relative">
                             <input type="checkbox" id="toggleMultiDoc" class="sr-only peer">
-                            <div class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-accent"></div>
+                            <div class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-accent"></div>
                         </div>
                     </label>
                 </div>
 
                 <div id="chatMessages" class="flex-1 overflow-y-auto p-3 text-sm flex flex-col gap-3">
                     <div class="bg-bgPanel p-2 rounded-lg border border-border self-start max-w-[85%] text-textMuted">
-                        Faça o upload de um PDF e pergunte algo específico. Use o 👍/👎 nas respostas para ensinar a IA!
+                        Faça o upload de um PDF e pergunte algo específico, ou escolha uma ferramenta na aba <b>Apps</b>.
                     </div>
                 </div>
 
                 <div class="p-2 bg-bgPanel border-t border-border flex-shrink-0">
                     <div class="flex relative">
                         <textarea id="chatInput" rows="2" class="w-full bg-bgMain text-textMain border border-border rounded-lg p-2 pr-10 resize-none focus:outline-none focus:border-accent text-sm" placeholder="O que diz a cláusula 4?"></textarea>
-                        <button id="btnSendChat" class="absolute right-2 bottom-2 text-accent hover:text-accentHover p-1 disabled:opacity-50" aria-label="Enviar mensagem">
+                        <button id="btnSendChat" class="absolute right-2 bottom-2 text-accent hover:text-accentHover p-1 disabled:opacity-50">
                             <i class="fa-solid fa-paper-plane"></i>
                         </button>
                     </div>
@@ -160,11 +205,69 @@
                         <i class="fa-solid fa-chart-pie"></i> Análise & Relatórios
                     </h3>
                     <div class="grid grid-cols-1 gap-3">
-                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent hover:shadow-md cursor-pointer transition-all tool-card group" data-prompt="Gere um relatório executivo destacando os pontos críticos deste documento: prazos importantes, multas aplicáveis, exigências técnicas/financeiras e contatos consolidados. Use formatação HTML clara com listas e títulos.">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight pr-2">Relatório de pontos críticos</h4>
-                                <div class="w-6 h-6 rounded bg-bgHover flex items-center justify-center text-textMuted group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0"><i class="fa-regular fa-file-pdf text-xs"></i></div>
-                            </div>
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent cursor-pointer transition-all tool-card group" data-prompt="Gere um relatório executivo destacando os pontos críticos deste documento: prazos importantes, multas aplicáveis, exigências técnicas/financeiras e contatos consolidados. Use formatação HTML clara com listas e títulos.">
+                            <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight mb-2">Relatório de pontos críticos</h4>
+                            <p class="text-[11px] text-textMuted leading-relaxed">Gera um relatório executivo HTML/PDF com prazos, multas, exigências e contatos consolidados.</p>
+                        </div>
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent cursor-pointer transition-all tool-card group" data-prompt="Extraia cronologicamente todas as datas, prazos e eventos mencionados no documento. Apresente em formato de linha do tempo visual.">
+                            <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight mb-2">Timeline de prazos</h4>
+                            <p class="text-[11px] text-textMuted leading-relaxed">Extrai todas as datas do edital e cria uma linha do tempo visual interativa com alertas.</p>
+                        </div>
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent cursor-pointer transition-all tool-card group" data-prompt="Analise as cláusulas deste documento e construa um Mapa de Riscos estruturado. Identifique cláusulas restritivas, ambiguidades ou penalidades severas.">
+                            <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight mb-2">Mapa de riscos</h4>
+                            <p class="text-[11px] text-textMuted leading-relaxed">Matriz probabilidade × impacto gerada pela IA com base nas cláusulas identificadas.</p>
+                        </div>
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent cursor-pointer transition-all tool-card group" data-prompt="Atribua um 'Score de Viabilidade' de 0 a 10 para a participação neste edital. Justifique detalhadamente a nota avaliando rigorosamente a complexidade.">
+                            <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight mb-2">Score de viabilidade</h4>
+                            <p class="text-[11px] text-textMuted leading-relaxed">Pontua o edital de 0–10 considerando complexidade documental, prazos apertados e valor estimado.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3 class="text-[11px] font-bold text-textMuted mb-3 uppercase tracking-widest flex items-center gap-2">
+                        <i class="fa-solid fa-folder-tree"></i> Produtividade Documental
+                    </h3>
+                    <div class="grid grid-cols-1 gap-3">
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent cursor-pointer transition-all tool-card group" data-prompt="Gere um checklist exaustivo contendo TODOS os documentos exigidos para habilitação. Formate como uma lista interativa usando `[ ]` antes de cada item.">
+                            <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight mb-2">Checklist de habilitação</h4>
+                            <p class="text-[11px] text-textMuted leading-relaxed">Gera uma lista interativa (com checkboxes) de toda documentação exigida para habilitação.</p>
+                        </div>
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent cursor-pointer transition-all tool-card group" data-prompt="Por favor, analise as diferenças cruciais entre os arquivos carregados. Foque nas disparidades de prazos, documentos e valores.">
+                            <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight mb-2">Comparador de editais</h4>
+                            <p class="text-[11px] text-textMuted leading-relaxed">Side-by-side entre dois ou mais editais carregados, destacando diferenças relevantes.</p>
+                        </div>
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent cursor-pointer transition-all tool-card group" data-prompt="Encontre e transcreva as cláusulas e trechos que falem sobre intenções como: garantia dos produtos/serviços, prazos de execução/entrega, penalidades e rescisão.">
+                            <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight mb-2">Busca semântica</h4>
+                            <p class="text-[11px] text-textMuted leading-relaxed">Encontra trechos por intenção, não apenas palavra exata.</p>
+                        </div>
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent cursor-pointer transition-all tool-card group" data-prompt="Mapeie o documento: identifique de forma resumida o número das páginas de referência onde se encontram os blocos principais do edital.">
+                            <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight mb-2">Marcadores de página</h4>
+                            <p class="text-[11px] text-textMuted leading-relaxed">Localiza rapidamente os grandes blocos de informação.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3 class="text-[11px] font-bold text-textMuted mb-3 uppercase tracking-widest flex items-center gap-2">
+                        <i class="fa-solid fa-file-export"></i> Exportação
+                    </h3>
+                    <div class="grid grid-cols-1 gap-3">
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent cursor-pointer transition-all tool-card group" data-prompt="Gere a estrutura de um Relatório em formato de texto contendo: Capa, Sumário Executivo, Checklist resumido e um Mapa de Riscos.">
+                            <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight mb-2">Exportar relatório PDF</h4>
+                            <p class="text-[11px] text-textMuted leading-relaxed">Gera PDF pronto para compartilhar com a equipe.</p>
+                        </div>
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent cursor-pointer transition-all tool-card group" data-prompt="Extraia detalhadamente todos os itens licitados e estruture-os como uma tabela CSV usando ponto e vírgula.">
+                            <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight mb-2">Exportar para planilha</h4>
+                            <p class="text-[11px] text-textMuted leading-relaxed">Tabela com itens licitados, quantidades e valores.</p>
+                        </div>
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent cursor-pointer transition-all tool-card group" data-prompt="Redija um rascunho de e-mail formal direcionado ao Pregoeiro solicitando esclarecimento sobre as principais cláusulas ambíguas.">
+                            <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight mb-2">Rascunho de e-mail</h4>
+                            <p class="text-[11px] text-textMuted leading-relaxed">IA gera minuta de e-mail formal de pedido de esclarecimentos.</p>
+                        </div>
+                        <div class="bg-bgPanel border border-border p-3 rounded-xl shadow-sm hover:border-accent cursor-pointer transition-all tool-card group" data-prompt="Analise este edital especificamente sob a ótica da Lei de Licitações. Identifique e explique cláusulas que possam ser consideradas abusivas.">
+                            <h4 class="font-bold text-[13px] text-textMain group-hover:text-accent transition-colors leading-tight mb-2">Detector de cláusulas abusivas</h4>
+                            <p class="text-[11px] text-textMuted leading-relaxed">Identifica cláusulas restritivas à competição segundo a Lei 14.133/2021.</p>
                         </div>
                     </div>
                 </section>
@@ -179,7 +282,10 @@
                 <div id="analysisResults" class="flex-1 overflow-y-auto p-4 text-sm text-textMain ai-formatted-content">
                     <div class="text-textMuted text-center mt-4 italic">
                         Clique acima para ler TODOS os PDFs carregados de uma só vez.<br><br>
-                        Os resultados serão grifados não apenas aqui, mas também <b>direto no seu PDF original</b>.
+                        Os resultados serão grifados não apenas aqui, mas também <b>direto no seu PDF original</b>:<br><br>
+                        <span class="highlight-yellow block mb-2 w-max mx-auto">Tópicos de Atenção</span>
+                        <span class="highlight-blue block mb-2 w-max mx-auto">Documentação</span>
+                        <span class="highlight-green block w-max mx-auto">Contatos</span>
                     </div>
                 </div>
             </div>
@@ -192,7 +298,6 @@
                     <i class="fa-solid fa-download"></i> Exportar
                 </button>
             </div>
-            
             <div class="p-3 border-b border-border flex-shrink-0">
                 <div class="flex gap-2">
                     <input type="text" id="noteInput" class="flex-1 bg-bgMain text-textMain border border-border rounded p-1.5 text-sm focus:outline-none focus:border-accent transition-all" placeholder="Nova anotação rápida...">
@@ -201,14 +306,12 @@
                     </button>
                 </div>
             </div>
-
             <div id="notesList" class="flex-1 overflow-y-auto p-3 flex flex-col gap-2"></div>
         </div>
     </aside>
 
     <script>
         const MAX_PAGES_TO_EXTRACT = 50;
-
         function getMaxChars() { return 200000; }
 
         function showToast(message, type = 'info', duration = 3500) {
@@ -222,8 +325,7 @@
         }
 
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-        const state = { files: [], activeFileId: null, zoom: 1.0, chatHistory: [] };
+        const state = { files: [], activeFileId: null, zoom: 1.0, theme: localStorage.getItem('workspace_theme') || 'classico', chatHistory: [] };
 
         const DOM = {
             leftSidebar: document.getElementById('leftSidebar'), mainViewer: document.getElementById('mainViewer'),
@@ -235,9 +337,8 @@
             currentFileName: document.getElementById('currentFileName'), btnZoomIn: document.getElementById('btnZoomIn'),
             btnZoomOut: document.getElementById('btnZoomOut'), zoomLevel: document.getElementById('zoomLevel'),
             extractionIndicator: document.getElementById('extractionIndicator'), extractionLabel: document.getElementById('extractionLabel'),
-            tabChat: document.getElementById('tabChat'), tabTools: document.getElementById('tabTools'),
-            tabAnalysis: document.getElementById('tabAnalysis'), contentChat: document.getElementById('contentChat'),
-            contentTools: document.getElementById('contentTools'), contentAnalysis: document.getElementById('contentAnalysis'),
+            tabChat: document.getElementById('tabChat'), tabTools: document.getElementById('tabTools'), tabAnalysis: document.getElementById('tabAnalysis'),
+            contentChat: document.getElementById('contentChat'), contentTools: document.getElementById('contentTools'), contentAnalysis: document.getElementById('contentAnalysis'),
             btnRunAnalysis: document.getElementById('btnRunAnalysis'), analysisResults: document.getElementById('analysisResults'),
             toggleMultiDoc: document.getElementById('toggleMultiDoc'), chatScopeLabel: document.getElementById('chatScopeLabel'),
             toolCards: document.querySelectorAll('.tool-card'), chatMessages: document.getElementById('chatMessages'),
@@ -298,6 +399,20 @@
         DOM.notesList.addEventListener('click', (e) => { const btn = e.target.closest('[data-note-id]'); if (btn) deleteNoteFromDB(Number(btn.dataset.noteId)); });
         DOM.btnAddNote.addEventListener('click', () => { const text = DOM.noteInput.value.trim(); if (text) { addNoteToDB(text); DOM.noteInput.value = ''; DOM.noteInput.classList.add('note-saved'); DOM.noteInput.addEventListener('animationend', () => DOM.noteInput.classList.remove('note-saved'), { once: true }); } });
         DOM.noteInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') DOM.btnAddNote.click(); });
+        
+        DOM.btnExportNotes.addEventListener('click', () => {
+            const transaction = db.transaction(['notes'], 'readonly');
+            const request = transaction.objectStore('notes').getAll();
+            request.onsuccess = () => {
+                const notes = request.result;
+                if (notes.length === 0) return showToast("Nenhuma nota para exportar.", "warn");
+                let content = "=== MINHAS NOTAS | WORKSPACE 360 ===\n\n";
+                notes.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)).forEach(n => { content += `[${new Date(n.timestamp).toLocaleString('pt-BR')}]\n${n.text}\n\n`; });
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a'); a.href = url; a.download = `Notas_${Date.now()}.txt`; a.click(); URL.revokeObjectURL(url);
+            };
+        });
         initDB();
 
         DOM.fileUpload.addEventListener('change', handleFiles);
@@ -353,7 +468,8 @@
             try {
                 if (!fileObj.pdfDoc) { const loadingTask = pdfjsLib.getDocument(fileObj.blobUrl); fileObj.pdfDoc = await loadingTask.promise; extractTextFromPDF(fileObj); }
                 await renderAllPages(fileObj.pdfDoc);
-            } catch (error) { DOM.pdfRenderArea.innerHTML = '<div class="text-red-500 mt-10 text-center p-4">Erro ao renderizar.</div>'; }
+                applyHighlightsToPDF();
+            } catch (error) { DOM.pdfRenderArea.innerHTML = '<div class="text-red-500 mt-10 text-center p-4">Erro ao renderizar documento.</div>'; }
         }
 
         async function renderAllPages(pdfDoc) {
@@ -387,27 +503,24 @@
         }
 
         // ==========================================
-        // COMUNICAÇÃO COM A VERCEL E FEEDBACK SUPABASE
+        // VERCEL E FEEDBACK
         // ==========================================
         async function fetchFromAI(systemPrompt, userText) {
             try {
                 const res = await fetch('/api/chat', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ pergunta: userText || "Responda.", textoPDF: systemPrompt || "" })
+                    body: JSON.stringify({ pergunta: userText || "Responda baseando-se no documento.", textoPDF: systemPrompt || "" })
                 });
                 const data = await res.json();
-                if (data.erro) throw new Error(data.erro);
+                if (!res.ok || data.erro) throw new Error(data.erro || "Falha na comunicação");
                 return data.respostaIA;
-            } catch (error) { throw new Error(`Servidor: ${error.message}`); }
+            } catch (error) { throw new Error(error.message); }
         }
 
         function appendChatMessage(role, text, originalQuestion = "") {
             const div = document.createElement('div');
             const isUser = role === 'user';
-            div.className = `p-3 rounded-lg border border-border max-w-[85%] text-sm ${
-                isUser ? 'bg-accent text-white self-end border-accent' : 'bg-bgPanel text-textMain self-start shadow-sm'
-            }`;
-
+            div.className = `p-3 rounded-lg border border-border max-w-[85%] text-sm ${isUser ? 'bg-accent text-white self-end border-accent' : 'bg-bgPanel text-textMain self-start shadow-sm'}`;
             const formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
             
             if (isUser) {
@@ -430,34 +543,23 @@
                             btn.classList.replace('text-textMuted', 'text-green-500');
                             btn.parentElement.querySelectorAll('button').forEach(b => b.disabled = true);
                         } else {
-                            const ideal = prompt("Como a IA deveria ter respondido? (Isso será salvo na base de conhecimento)");
+                            const ideal = prompt("Como a IA deveria ter respondido?");
                             if (ideal && ideal.trim() !== "") {
-                                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-                                btn.disabled = true;
+                                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; btn.disabled = true;
                                 try {
-                                    const res = await fetch('/api/chat', {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ tipo: 'feedback', pergunta: originalQuestion, respostaIA: text, respostaIdeal: ideal })
-                                    });
+                                    const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tipo: 'feedback', pergunta: originalQuestion, respostaIA: text, respostaIdeal: ideal }) });
                                     if(res.ok) {
-                                        showToast("Sua correção foi salva na nuvem com sucesso!", "success");
+                                        showToast("Sua correção foi salva!", "success");
                                         btn.innerHTML = '<i class="fa-solid fa-check text-green-500"></i>';
                                         btn.parentElement.querySelectorAll('button').forEach(b => b.disabled = true);
-                                    } else throw new Error("Erro no servidor.");
-                                } catch (err) {
-                                    showToast("Falha ao salvar a correção na nuvem.", "error");
-                                    btn.innerHTML = '<i class="fa-solid fa-thumbs-down"></i>';
-                                    btn.disabled = false;
-                                }
+                                    } else throw new Error("Erro.");
+                                } catch (err) { showToast("Falha ao salvar correção.", "error"); btn.innerHTML = '<i class="fa-solid fa-thumbs-down"></i>'; btn.disabled = false; }
                             }
                         }
                     });
                 });
             }
-
-            DOM.chatMessages.appendChild(div);
-            DOM.chatMessages.scrollTop = DOM.chatMessages.scrollHeight;
+            DOM.chatMessages.appendChild(div); DOM.chatMessages.scrollTop = DOM.chatMessages.scrollHeight;
         }
 
         async function gatherAllFilesText() {
@@ -491,14 +593,14 @@
             }
 
             const historyContext = state.chatHistory.slice(-6).map(m => `[${m.role === 'user' ? 'Usuário' : 'IA'}]: ${m.content}`).join('\n');
-            const systemPrompt = `Você é um assistente técnico especialista. Responda APENAS com base no documento.\n\nHISTÓRICO RECENTE:\n${historyContext}\n\nDOCUMENTOS:\n${docText}`;
+            const systemPrompt = `Você é um assistente técnico especialista. Responda APENAS com base no documento.\nHISTÓRICO RECENTE:\n${historyContext}\n\nDOCUMENTOS:\n${docText}`;
 
             try {
                 const answer = await fetchFromAI(systemPrompt, question);
                 appendChatMessage('ai', answer, question);
                 state.chatHistory.push({ role: 'ai', content: answer });
             } catch (error) {
-                appendChatMessage('ai', `⚠️ Erro: ${error.message}`);
+                appendChatMessage('ai', `⚠️ Erro reportado pelo servidor: ${error.message}`);
             } finally {
                 DOM.btnSendChat.disabled = false; DOM.btnSendChat.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
             }
@@ -507,13 +609,14 @@
         DOM.btnSendChat.addEventListener('click', askAI);
         DOM.chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); askAI(); } });
 
+        // RESUMIR PÁGINAS
         DOM.btnSummarizePages.addEventListener('click', async () => {
             const activeFile = state.files.find(f => f.id === state.activeFileId);
             if (!activeFile || !activeFile.extractedText) return showToast("Aguarde a extração de texto.", "info");
             DOM.btnSummarizePages.disabled = true; DOM.btnSummarizePages.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processando...';
             try {
                 document.querySelectorAll('.page-summary-bubble').forEach(b => b.remove());
-                const answerRaw = await fetchFromAI(activeFile.extractedText.substring(0, getMaxChars()), `Faça um resumo ULTRA-CURTO (2 frases) da essência de CADA PÁGINA. REGRA: Use formato PAGINA_1|resumo`);
+                const answerRaw = await fetchFromAI(activeFile.extractedText.substring(0, getMaxChars()), `Faça um resumo ULTRA-CURTO (2 frases) da essência de CADA PÁGINA do documento abaixo. REGRA CRÍTICA: Use formato exato: PAGINA_1|resumo`);
                 answerRaw.split('\n').forEach(line => {
                     const match = line.match(/PAGINA_(\d+)\|(.*)/i);
                     if (match) {
@@ -527,6 +630,51 @@
                 });
                 showToast("Resumos gerados!", "success");
             } catch (error) { showToast("Erro: " + error.message, "error"); } finally { DOM.btnSummarizePages.disabled = false; DOM.btnSummarizePages.innerHTML = '<i class="fa-solid fa-file-waveform"></i> <span class="hidden xl:inline">Resumir Páginas</span>'; }
+        });
+
+        // ANÁLISE GERAL E GRIFOS
+        function escapeRegExp(string) { return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+        function applyHighlightsToPDF() {
+            document.querySelectorAll('.textLayer mark').forEach(mark => { const parent = mark.parentNode; parent.replaceChild(document.createTextNode(mark.textContent), mark); parent.normalize(); });
+            const termsToHighlight = [];
+            document.querySelectorAll('#analysisResults .highlight-yellow').forEach(el => termsToHighlight.push({ text: el.textContent.trim(), color: 'pdf-highlight-yellow' }));
+            document.querySelectorAll('#analysisResults .highlight-blue').forEach(el => termsToHighlight.push({ text: el.textContent.trim(), color: 'pdf-highlight-blue' }));
+            document.querySelectorAll('#analysisResults .highlight-green').forEach(el => termsToHighlight.push({ text: el.textContent.trim(), color: 'pdf-highlight-green' }));
+            if (termsToHighlight.length === 0) return;
+            document.querySelectorAll('.textLayer span').forEach(span => {
+                let html = span.textContent; let modified = false;
+                termsToHighlight.forEach(termObj => {
+                    if (termObj.text.length < 4) return;
+                    const regex = new RegExp(`(${escapeRegExp(termObj.text)})`, 'gi');
+                    if (regex.test(html)) { html = html.replace(regex, `<mark class="${termObj.color}">$1</mark>`); modified = true; }
+                });
+                if (modified) span.innerHTML = html;
+            });
+        }
+
+        DOM.btnRunAnalysis.addEventListener('click', async () => {
+            if (state.files.length === 0) return showToast("Faça upload de pelo menos um PDF.", "warn");
+            DOM.btnRunAnalysis.disabled = true; DOM.btnRunAnalysis.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analisando Múltiplos Arquivos...';
+            try {
+                const allText = await gatherAllFilesText();
+                const truncatedText = allText.substring(0, getMaxChars());
+                const prompt = `Você é um analista rigoroso. Analise TODOS os documentos fornecidos e consolide nestas três categorias.
+REGRAS (CRÍTICO): Responda em HTML com <h3> e <ul>. Destaque partes do texto LITERAIS usando tags CSS:
+- Multas e prazos finais: Use <span class="highlight-yellow">...</span>
+- Documentos e Certidões exigidos: Use <span class="highlight-blue">...</span>
+- Contatos/Nomes: Use <span class="highlight-green">...</span>
+SEÇÕES OBRIGATÓRIAS: <h3>Tópicos de Atenção</h3>, <h3>Documentação Exigida</h3>, <h3>Contatos Úteis</h3>`;
+                const answerRaw = await fetchFromAI(truncatedText, prompt);
+                let answerHTML = answerRaw.replace(/```html/g, '').replace(/```/g, '');
+                DOM.analysisResults.innerHTML = DOMPurify.sanitize(answerHTML, { ALLOWED_TAGS: ['h3', 'ul', 'li', 'span', 'b', 'strong', 'i', 'em', 'br', 'div', 'p'], ALLOWED_ATTR: ['class'] });
+                applyHighlightsToPDF();
+                showToast("Análise concluída com sucesso!", "success");
+            } catch (error) {
+                DOM.analysisResults.innerHTML = `<div class="text-red-500 p-3 bg-red-100 rounded border border-red-300">⚠️ Erro reportado: ${error.message}</div>`;
+            } finally {
+                DOM.btnRunAnalysis.disabled = false; DOM.btnRunAnalysis.innerHTML = '<i class="fa-solid fa-microchip"></i> Reprocessar Todos os Arquivos';
+            }
         });
 
     </script>
